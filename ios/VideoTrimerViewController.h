@@ -7,8 +7,17 @@
 //
 
 #import <UIKit/UIKit.h>
-
+@protocol VideoTrimerViewDelegate;
 @interface VideoTrimerViewController : UIViewController
-
+@property (weak, nonatomic, nullable) id<VideoTrimerViewDelegate> delegate;
 -(void) setupAsset:(NSString *)localIdentifier;
+@end
+
+
+@protocol VideoTrimerViewDelegate <NSObject>
+
+@optional
+- (void)videoTrimerViewController:(nonnull VideoTrimerViewController *)videoTrimmerController didChangeStartTime:(Float64)startTime endTime:(Float64)endTime;
+- (void)didFinishVideoTrimerViewController:(nonnull VideoTrimerViewController *)videoTrimmerController withStartTime:(Float64)startTime endTime:(Float64)endTime;
+- (void)didFinishVideoTrimerViewController:(nonnull VideoTrimerViewController *)videoTrimmerController;
 @end

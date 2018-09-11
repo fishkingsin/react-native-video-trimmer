@@ -6,7 +6,7 @@
 #import <React/RCTUtils.h>
 #import "VideoTrimerViewController.h"
 @import Photos;
-@interface RNVideoTrimmer ()
+@interface RNVideoTrimmer () <VideoTrimerViewDelegate>
 
 @property (nonatomic, strong) RCTResponseSenderBlock callback;
 @property (nonatomic, strong) NSDictionary *defaultOptions;
@@ -40,10 +40,16 @@ RCT_EXPORT_METHOD(showVideoTrimmer:(NSDictionary *)options callback:(RCTResponse
 
 
     NSBundle *podBundle = [NSBundle bundleForClass:[VideoTrimerViewController class]];
+    VideoTrimerViewController *vc;
+    NSBundle *bundle;
     id data = [podBundle URLForResource:@"RNVideoTrimmer" withExtension:@"bundle"];
-    NSBundle *bundle = [NSBundle bundleWithURL:data];
-    VideoTrimerViewController *vc = [[VideoTrimerViewController alloc]initWithNibName:@"VideoTrimerViewController" bundle:bundle];
-
+    if(data != nil) {
+        bundle = [NSBundle bundleWithURL:data];
+    } else {
+        bundle = podBundle;
+    }
+    vc = [[VideoTrimerViewController alloc]initWithNibName:@"VideoTrimerViewController" bundle:bundle];
+    [vc setDelegate:self];
     dispatch_async(dispatch_get_main_queue(), ^{
         UIViewController *root = RCTPresentedViewController();
         [root presentViewController:vc animated:YES completion:^{
@@ -64,6 +70,17 @@ RCT_EXPORT_METHOD(showVideoTrimmer:(NSDictionary *)options callback:(RCTResponse
 + (BOOL)requiresMainQueueSetup
 {
     return YES;
+}
+
+#pragma VideoTrimerViewDelegate
+- (void)videoTrimerViewController:(nonnull VideoTrimerViewController *)videoTrimmerController didChangeStartTime:(Float64)startTime endTime:(Float64)endTime{
+    NSLog(@"videoTrimerViewController didChangeStartTime %f %f", startTime, endTime);
+}
+- (void)didFinishVideoTrimerViewController:(nonnull VideoTrimerViewController *)videoTrimmerController withStartTime:(Float64)startTime endTime:(Float64)endTime{
+    NSLog(@"didFinishVideoTrimerViewController withStartTime endTime %f %f", startTime, endTime);
+}
+- (void)didFinishVideoTrimerViewController:(nonnull VideoTrimerViewController *)videoTrimmerController{
+    NSLog(@"didFinishVideoTrimerViewController");
 }
 
 @end
