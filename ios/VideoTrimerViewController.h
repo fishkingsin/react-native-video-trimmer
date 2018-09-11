@@ -9,5 +9,5 @@
 #import <UIKit/UIKit.h>
 
 @interface VideoTrimerViewController : UIViewController
-
+- (void) setUrl:(NSURL*)url;
 @end
