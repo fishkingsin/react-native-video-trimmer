@@ -3,11 +3,12 @@
 //  RNVideoTrimmer
 //
 //  Created by James Kong on 11/9/2018.
-//  Copyright © 2018 Facebook. All rights reserved.
+//  Copyright © 2018 Creedon Technologies. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
 
 @interface VideoTrimerViewController : UIViewController
-- (void) setUrl:(NSURL*)url;
+
+-(void) setupAsset:(NSString *)localIdentifier;
 @end

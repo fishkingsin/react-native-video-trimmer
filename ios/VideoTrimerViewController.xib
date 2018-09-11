@@ -4,6 +4,7 @@
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -11,11 +12,11 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="VideoTrimerViewController">
             <connections>
-                <outlet property="cancelButton" destination="Wjg-aL-7Z0" id="ZfQ-Ed-K1J"/>
-                <outlet property="doneButton" destination="QsI-99-mBh" id="Bgv-eL-0f9"/>
-                <outlet property="trimmerView" destination="pLF-bw-8XX" id="dKX-Zg-tJj"/>
-                <outlet property="videoLayer" destination="sba-XJ-bFr" id="7og-sh-YcS"/>
-                <outlet property="videoPlayer" destination="9Xz-jY-JFp" id="Zgs-wg-89A"/>
+                <outlet property="cancelButton" destination="Wjg-aL-7Z0" id="T2K-e6-aB8"/>
+                <outlet property="doneButton" destination="QsI-99-mBh" id="xmG-iY-zLJ"/>
+                <outlet property="trimmerView" destination="pLF-bw-8XX" id="RyQ-CX-DGa"/>
+                <outlet property="videoLayer" destination="sba-XJ-bFr" id="mpr-BG-2ho"/>
+                <outlet property="videoPlayer" destination="9Xz-jY-JFp" id="m01-I3-Q1d"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -42,7 +43,7 @@
                     <viewLayoutGuide key="safeArea" id="4Ef-JP-ozn"/>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pLF-bw-8XX" customClass="ICGVideoTrimmerView">
-                    <rect key="frame" x="15" y="582" width="360" height="41"/>
+                    <rect key="frame" x="15" y="582" width="345" height="41"/>
                     <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="41" id="aym-UF-Lcg"/>
@@ -55,14 +56,14 @@
                             <rect key="frame" x="16" y="6" width="48" height="30"/>
                             <state key="normal" title="Cancel"/>
                             <connections>
-                                <action selector="onCancelPressed:" destination="-1" eventType="touchUpOutside" id="TlM-KS-gKx"/>
+                                <action selector="onCancelPressed:" destination="-1" eventType="touchUpInside" id="Cs9-k8-rOK"/>
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QsI-99-mBh">
                             <rect key="frame" x="322" y="6" width="37" height="30"/>
                             <state key="normal" title="Done"/>
                             <connections>
-                                <action selector="onDonePressed:" destination="-1" eventType="touchUpInside" id="hNh-hY-EHN"/>
+                                <action selector="onDonePressed:" destination="-1" eventType="touchUpInside" id="DJi-A7-6wZ"/>
                             </connections>
                         </button>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:08" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="crg-Fs-dpv">
@@ -96,13 +97,13 @@
             <constraints>
                 <constraint firstItem="zNK-Zw-sMJ" firstAttribute="top" secondItem="pLF-bw-8XX" secondAttribute="bottom" id="HRA-mk-sA2"/>
                 <constraint firstItem="Q5M-cg-NOt" firstAttribute="bottom" secondItem="zNK-Zw-sMJ" secondAttribute="bottom" id="Ote-Ct-HsL"/>
-                <constraint firstItem="9Xz-jY-JFp" firstAttribute="trailing" secondItem="pLF-bw-8XX" secondAttribute="trailing" id="TEc-2C-wDJ"/>
                 <constraint firstItem="zNK-Zw-sMJ" firstAttribute="trailing" secondItem="Q5M-cg-NOt" secondAttribute="trailing" id="aTY-1c-Pj1"/>
                 <constraint firstItem="pLF-bw-8XX" firstAttribute="top" secondItem="9Xz-jY-JFp" secondAttribute="bottom" id="fbV-8n-bVF"/>
                 <constraint firstItem="zNK-Zw-sMJ" firstAttribute="leading" secondItem="Q5M-cg-NOt" secondAttribute="leading" id="hkP-cF-tel"/>
                 <constraint firstItem="pLF-bw-8XX" firstAttribute="leading" secondItem="Q5M-cg-NOt" secondAttribute="leading" constant="15" id="iiQ-yU-AVN"/>
                 <constraint firstItem="9Xz-jY-JFp" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="kf8-Ip-v6F"/>
-                <constraint firstItem="pLF-bw-8XX" firstAttribute="trailing" secondItem="Q5M-cg-NOt" secondAttribute="trailing" id="w8p-pG-Dru"/>
+                <constraint firstItem="9Xz-jY-JFp" firstAttribute="trailing" secondItem="zNK-Zw-sMJ" secondAttribute="trailing" id="qJM-4z-qgf"/>
+                <constraint firstItem="pLF-bw-8XX" firstAttribute="trailing" secondItem="Q5M-cg-NOt" secondAttribute="trailing" constant="-15" id="w8p-pG-Dru"/>
                 <constraint firstItem="9Xz-jY-JFp" firstAttribute="leading" secondItem="zNK-Zw-sMJ" secondAttribute="leading" id="xau-gs-zt8"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="Q5M-cg-NOt"/>

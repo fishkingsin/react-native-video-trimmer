@@ -5,6 +5,7 @@
 #import <Photos/Photos.h>
 #import <React/RCTUtils.h>
 #import "VideoTrimerViewController.h"
+@import Photos;
 @interface RNVideoTrimmer ()
 
 @property (nonatomic, strong) RCTResponseSenderBlock callback;
@@ -25,6 +26,19 @@ RCT_EXPORT_METHOD(showVideoTrimmer:(NSDictionary *)options callback:(RCTResponse
     self.options = [NSMutableDictionary dictionaryWithDictionary:options];
 
 
+    NSString *assetID = @"";
+
+
+    assetID = [self.options[@"uri"] substringFromIndex:@"ph://".length];
+
+    PHFetchResult *results;
+    results = [PHAsset fetchAssetsWithLocalIdentifiers:@[assetID] options:nil];
+    if (results.count == 0) {
+        NSString *errorText = [NSString stringWithFormat:@"Failed to fetch PHAsset with local identifier %@ with no error message.", assetID];
+        self.callback(@[@{@"error": errorText}]);
+    }
+
+
     NSBundle *podBundle = [NSBundle bundleForClass:[VideoTrimerViewController class]];
     id data = [podBundle URLForResource:@"RNVideoTrimmer" withExtension:@"bundle"];
     NSBundle *bundle = [NSBundle bundleWithURL:data];
@@ -32,10 +46,14 @@ RCT_EXPORT_METHOD(showVideoTrimmer:(NSDictionary *)options callback:(RCTResponse
 
     dispatch_async(dispatch_get_main_queue(), ^{
         UIViewController *root = RCTPresentedViewController();
-
-
-        [root presentViewController:vc animated:YES completion:nil];
+        [root presentViewController:vc animated:YES completion:^{
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [vc setupAsset:assetID];
+            });
+        }];
     });
+
+
 }
 
 - (dispatch_queue_t)methodQueue

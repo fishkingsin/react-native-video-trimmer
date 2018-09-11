@@ -1,15 +1,17 @@
+
 //
 //  VideoTrimerViewController.m
 //  RNVideoTrimmer
 //
 //  Created by James Kong on 11/9/2018.
-//  Copyright © 2018 Facebook. All rights reserved.
+//  Copyright © 2018 Creedon Technologies. All rights reserved.
 //
 
 #import "VideoTrimerViewController.h"
 #import "ICGVideoTrimmerView.h"
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <AVFoundation/AVFoundation.h>
+@import Photos;
 @interface VideoTrimerViewController () <ICGVideoTrimmerDelegate>
 
 @property (assign, nonatomic) BOOL isPlaying;
@@ -29,7 +31,6 @@
 @property (assign, nonatomic) CGFloat startTime;
 @property (assign, nonatomic) CGFloat stopTime;
 
-@property (assign, nonatomic) NSURL *url;
 @property (strong, nonatomic) AVAsset *asset;
 
 @property (assign, nonatomic) BOOL restartOnPlay;
@@ -42,45 +43,67 @@
     // Do any additional setup after loading the view from its nib.
 }
 
+- (void)viewDidAppear:(BOOL)animated{
+
+}
+
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-- (void) setUrl:(NSURL*)url{
-    self.url = url;
-}
--(void) setupAsset {
-    if( self. url == nil) {
+
+
+-(void) setupAsset:(NSString *)localIdentifier {
+    if( localIdentifier == nil) {
         return;
     }
-    self.asset = [AVAsset assetWithURL:self.url];
 
-    AVPlayerItem *item = [AVPlayerItem playerItemWithAsset:self.asset];
+    PHFetchResult *results;
+    results = [PHAsset fetchAssetsWithLocalIdentifiers:@[localIdentifier] options:nil];
+    if (results.count == 0) {
+        NSString *errorText = [NSString stringWithFormat:@"Failed to fetch PHAsset with local identifier %@ with no error message.", localIdentifier];
+    }
 
-    self.player = [AVPlayer playerWithPlayerItem:item];
-    self.playerLayer = [AVPlayerLayer playerLayerWithPlayer:self.player];
-    self.playerLayer.contentsGravity = AVLayerVideoGravityResizeAspect;
-    self.player.actionAtItemEnd = AVPlayerActionAtItemEndNone;
+    PHAsset *asset = [results firstObject];
+    PHVideoRequestOptions *videoRequestOptions = [PHVideoRequestOptions new];
+    videoRequestOptions.networkAccessAllowed = YES;
+    // TOD show loading
+    [[PHImageManager defaultManager] requestAVAssetForVideo:asset options:videoRequestOptions resultHandler:^(AVAsset * _Nullable asset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
+        if (asset != nil) {
+            self.asset = asset;
 
-    [self.videoLayer.layer addSublayer:self.playerLayer];
+            AVPlayerItem *item = [AVPlayerItem playerItemWithAsset:self.asset];
 
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapOnVideoLayer:)];
-    [self.videoLayer addGestureRecognizer:tap];
+            self.player = [AVPlayer playerWithPlayerItem:item];
+            self.playerLayer = [AVPlayerLayer playerLayerWithPlayer:self.player];
+            self.playerLayer.contentsGravity = AVLayerVideoGravityResizeAspect;
+            self.player.actionAtItemEnd = AVPlayerActionAtItemEndNone;
 
-    self.videoPlaybackPosition = 0;
+            [self.videoLayer.layer addSublayer:self.playerLayer];
 
-    [self tapOnVideoLayer:tap];
+            UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapOnVideoLayer:)];
+            [self.videoLayer addGestureRecognizer:tap];
 
-    // set properties for trimmer view
-    [self.trimmerView setThemeColor:[UIColor lightGrayColor]];
-    [self.trimmerView setAsset:self.asset];
-    [self.trimmerView setShowsRulerView:YES];
-    [self.trimmerView setRulerLabelInterval:10];
-    [self.trimmerView setTrackerColor:[UIColor cyanColor]];
-    [self.trimmerView setDelegate:self];
+            self.videoPlaybackPosition = 0;
 
-    // important: reset subviews
-    [self.trimmerView resetSubviews];
+            [self tapOnVideoLayer:tap];
+
+            // set properties for trimmer view
+            [self.trimmerView setThemeColor:[UIColor lightGrayColor]];
+            [self.trimmerView setAsset:self.asset];
+            [self.trimmerView setShowsRulerView:YES];
+            [self.trimmerView setRulerLabelInterval:10];
+            [self.trimmerView setTrackerColor:[UIColor cyanColor]];
+            [self.trimmerView setDelegate:self];
+
+            // important: reset subviews
+            [self.trimmerView resetSubviews];
+        } else {
+            NSString *errorText = [NSString stringWithFormat:@"Failed to fetch video with local identifier %@ with no error message.", localIdentifier];
+            //            self.callback(@[@{@"error": errorText}]);
+        }
+    }];
 }
 - (IBAction)onCancelPressed:(id)sender {
     [self dismissViewControllerAnimated:YES completion:nil];
@@ -179,14 +202,6 @@
     //NSLog(@"seekVideoToPos time:%.2f", CMTimeGetSeconds(time));
     [self.player seekToTime:time toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
 }
-/*
-#pragma mark - Navigation
 
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end
