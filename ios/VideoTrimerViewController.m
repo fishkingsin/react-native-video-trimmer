@@ -121,7 +121,8 @@
 				[self.videoLayer addGestureRecognizer:tap];
 
                 Float64 duration = CMTimeGetSeconds(self.asset.duration);
-                self.stopTime = duration < DEFAULT_LENGTH ? duration : DEFAULT_LENGTH ;
+
+                self.stopTime = duration < self.maxLength ? duration : self.maxLength ;
                 self.startTime = 0;
 
                 self.videoPlaybackPosition = 0;
@@ -135,7 +136,7 @@
 //                [self.trimmerView setRulerLabelInterval:10];
 				[self.trimmerView setTrackerColor:[UIColor whiteColor]];
 				[self.trimmerView setDelegate:self];
-                [self.trimmerView setMaxLength: DEFAULT_LENGTH];
+                [self.trimmerView setMaxLength: self.maxLength ];
                 [self.trimmerView setThumbWidth:12];
 
 				// important: reset subviews
