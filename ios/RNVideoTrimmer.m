@@ -82,7 +82,7 @@ RCT_EXPORT_METHOD(showVideoTrimmer:(NSDictionary *)options callback:(RCTResponse
 }
 - (void)didFinishVideoTrimerViewController:(nonnull VideoTrimerViewController *)videoTrimmerController{
     NSLog(@"didFinishVideoTrimerViewController");
-    self.callback(@[@{@"response": @"user cancel"}]);
+    self.callback(@[@{@"error": @"user cancel"}]);
 }
 - (void)videoTrimerViewController:(nonnull VideoTrimerViewController *)videoTrimmerController didFailedWithError:(NSError *)error{
     self.callback(@[@{@"error": error.localizedDescription}]);
