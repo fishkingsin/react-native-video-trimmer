@@ -29,7 +29,6 @@
 		B3E7B5891CC2AC0600A0062D /* RNVideoTrimmer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNVideoTrimmer.m; sourceTree = "<group>"; };
 		E36C3A022147510800097C81 /* VideoTrimerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoTrimerViewController.h; sourceTree = "<group>"; };
 		E36C3A032147510800097C81 /* VideoTrimerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VideoTrimerViewController.m; sourceTree = "<group>"; };
-		E36C3A042147510800097C81 /* VideoTrimerViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = VideoTrimerViewController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,7 +55,6 @@
 			children = (
 				E36C3A022147510800097C81 /* VideoTrimerViewController.h */,
 				E36C3A032147510800097C81 /* VideoTrimerViewController.m */,
-				E36C3A042147510800097C81 /* VideoTrimerViewController.xib */,
 				B3E7B5881CC2AC0600A0062D /* RNVideoTrimmer.h */,
 				B3E7B5891CC2AC0600A0062D /* RNVideoTrimmer.m */,
 				134814211AA4EA7D00B7C361 /* Products */,
