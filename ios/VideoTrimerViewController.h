@@ -11,6 +11,7 @@
 @interface VideoTrimerViewController : UIViewController
 @property (weak, nonatomic, nullable) id<VideoTrimerViewDelegate> delegate;
 @property (assign, nonatomic) Float64 maxLength;
+@property (assign, nonatomic) Float64 minLength;
 -(void) setupAsset:(NSString *)localIdentifier;
 @end
 

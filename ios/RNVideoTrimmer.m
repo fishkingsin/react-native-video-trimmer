@@ -29,8 +29,12 @@ RCT_EXPORT_METHOD(showVideoTrimmer:(NSDictionary *)options callback:(RCTResponse
 
     assetID = [self.options[@"uri"] substringFromIndex:@"ph://".length];
     float maxLength = 15;
+    float minLength = 0;
     if(self.options[@"maxLength"]){
         maxLength = [self.options[@"maxLength"] floatValue];
+    }
+    if(self.options[@"minLength"]){
+        minLength = [self.options[@"minLength"] floatValue];
     }
     PHFetchResult *results;
     results = [PHAsset fetchAssetsWithLocalIdentifiers:@[assetID] options:nil];
@@ -52,6 +56,7 @@ RCT_EXPORT_METHOD(showVideoTrimmer:(NSDictionary *)options callback:(RCTResponse
     vc = [[VideoTrimerViewController alloc]initWithNibName:@"VideoTrimerViewController" bundle:bundle];
     [vc setDelegate:self];
 	[vc setMaxLength: maxLength];
+    [vc setMinLength: minLength];
     dispatch_async(dispatch_get_main_queue(), ^{
         [vc setupAsset:assetID];
         UIViewController *root = RCTPresentedViewController();

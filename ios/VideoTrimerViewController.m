@@ -137,6 +137,7 @@
 				[self.trimmerView setTrackerColor:[UIColor whiteColor]];
 				[self.trimmerView setDelegate:self];
                 [self.trimmerView setMaxLength: self.maxLength ];
+                [self.trimmerView setMinLength: self.minLength ];
                 [self.trimmerView setThumbWidth:12];
 
 				// important: reset subviews
