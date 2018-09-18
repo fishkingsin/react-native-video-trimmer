@@ -165,6 +165,12 @@
     return videoRequestOptions;
 }
 - (IBAction)onCancelPressed:(id)sender {
+    
+    if (self.isPlaying) {
+        [self.player pause];
+        [self stopPlaybackTimeChecker];
+        self.isPlaying = NO;
+    }
     [self dismissViewControllerAnimated:YES completion:nil];
     if([self.delegate respondsToSelector:@selector(didFinishVideoTrimerViewController:)])
     {
@@ -173,6 +179,11 @@
 }
 
 - (IBAction)onDonePressed:(id)sender {
+    if (self.isPlaying) {
+        [self.player pause];
+        [self stopPlaybackTimeChecker];
+        self.isPlaying = NO;
+    }
     [self dismissViewControllerAnimated:YES completion:nil];
     if([self.delegate respondsToSelector:@selector(didFinishVideoTrimerViewController:withStartTime:endTime:)])
     {
