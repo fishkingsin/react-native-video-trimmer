@@ -221,7 +221,7 @@
 
 -(NSString*) timeFormatted:(CGFloat) sec{
 
-    int totalSeconds = floorf(sec);
+    int totalSeconds = roundf(sec);
     int seconds = totalSeconds % 60;
     int minutes = (totalSeconds / 60) % 60;
 
