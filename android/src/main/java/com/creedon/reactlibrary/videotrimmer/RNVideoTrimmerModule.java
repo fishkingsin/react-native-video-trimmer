@@ -6,10 +6,9 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 
-import com.creedon.androidVideoTrimmer.features.trim.VideoTrimmerActivity;
+import com.creedon.reactlibrary.videotrimmer.features.trim.VideoTrimmerActivity;
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -32,7 +31,7 @@ import iknow.android.utils.BaseUtils;
 import io.reactivex.functions.Consumer;
 
 import static android.app.Activity.RESULT_OK;
-import static com.creedon.androidVideoTrimmer.features.trim.VideoTrimmerActivity.VIDEO_TRIM_REQUEST_CODE;
+import static com.creedon.reactlibrary.videotrimmer.features.trim.VideoTrimmerActivity.VIDEO_TRIM_REQUEST_CODE;
 
 public class RNVideoTrimmerModule extends ReactContextBaseJavaModule implements ActivityEventListener {
 
@@ -75,12 +74,12 @@ public class RNVideoTrimmerModule extends ReactContextBaseJavaModule implements 
 						public void accept(Boolean granted) throws Exception {
 
 							if (granted) {
-								Bundle bundle = new Bundle();
-								String videoPath = "";
-								bundle.putString(VIDEO_PATH_KEY, videoPath);
-								Intent intent = new Intent(getReactApplicationContext(), VideoTrimmerActivity.class);
-								intent.putExtras(bundle);
-								reactContext.startActivityForResult(intent, VIDEO_TRIM_REQUEST_CODE, bundle);
+//								Bundle bundle = new Bundle();
+								String videoPath = RNVideoTrimmerModule.this.options.getString("uri");
+								Integer minLength = RNVideoTrimmerModule.this.options.getInt("minLength");
+								Integer maxLength = RNVideoTrimmerModule.this.options.getInt("maxLength");
+
+								VideoTrimmerActivity.call(getReactApplicationContext().getCurrentActivity(), videoPath);
 							} else {
 								RNVideoTrimmerModule.this.callback.invoke(PERMISSION_DENIED_ERROR, PHOTO_LIBRARY_PERMISSIONS_NOT_GRANTED);
 							}
