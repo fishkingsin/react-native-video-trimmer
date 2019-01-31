@@ -1,7 +1,7 @@
 
 {
   "name": "react-native-video-trimmer",
-  "version": "1.0.1",
+  "version": "1.0.0-dev2",
   "description": "",
   "main": "index.js",
   "scripts": {
