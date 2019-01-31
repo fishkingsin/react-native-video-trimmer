@@ -1,14 +1,18 @@
 
 package com.creedon.reactlibrary.videotrimmer;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.creedon.androidVideoTrimmer.features.trim.VideoTrimmerActivity;
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -16,6 +20,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,6 +29,7 @@ import org.json.JSONObject;
 import java.util.Iterator;
 
 import iknow.android.utils.BaseUtils;
+import io.reactivex.functions.Consumer;
 
 import static android.app.Activity.RESULT_OK;
 import static com.creedon.androidVideoTrimmer.features.trim.VideoTrimmerActivity.VIDEO_TRIM_REQUEST_CODE;
@@ -36,8 +42,8 @@ public class RNVideoTrimmerModule extends ReactContextBaseJavaModule implements 
 	private static final String PERMISSION_DENIED_ERROR = "PERMISSION_DENIED";
 	private static final String PHOTO_LIBRARY_PERMISSIONS_NOT_GRANTED = "Photo library permissions not granted";
 	private static final String VIDEO_PATH_KEY = "VIDEO_PATH_KEY";
-	private Promise mTrimmerPromise;
-	private ReadableMap options;
+    private ReadableMap options;
+    private Callback callback;
 	public RNVideoTrimmerModule(ReactApplicationContext reactContext) {
 		super(reactContext);
 		this.reactContext = reactContext;
@@ -49,37 +55,43 @@ public class RNVideoTrimmerModule extends ReactContextBaseJavaModule implements 
 		return getReactApplicationContext();
 	}
 
+	@SuppressLint("CheckResult")
 	@ReactMethod
-	public void showVideoTrimmer(final ReadableMap options, final Promise promise) {
+	public void showVideoTrimmer(final ReadableMap options, Callback callback) {
 		this.options = options;
 		final Activity activity = getCurrentActivity();
-		mTrimmerPromise = promise;
-//		if (activity == null) {
-//			promise.reject(E_ACTIVITY_DOES_NOT_EXIST, "Activity doesn't exist");
-//			return;
-//		}
-//		RxPermissions rxPermissions = new RxPermissions(this.getCurrentActivity());
-//		try {
-//			rxPermissions.request(Manifest.permission.READ_EXTERNAL_STORAGE).subscribe(new Consumer<Boolean>() {
-//				@Override
-//				public void accept(Boolean granted) throws Exception {
-//
-//					if (granted) {
-//						Bundle bundle = new Bundle();
-//						String videoPath = "";
-//						bundle.putString(VIDEO_PATH_KEY, videoPath);
-//						Intent intent = new Intent(getReactApplicationContext(), VideoTrimmerActivity.class);
-//						intent.putExtras(bundle);
-//						reactContext.startActivityForResult(intent, VIDEO_TRIM_REQUEST_CODE, bundle);
-//					} else {
-//						mTrimmerPromise.reject(PERMISSION_DENIED_ERROR, PHOTO_LIBRARY_PERMISSIONS_NOT_GRANTED);
-//					}
-//				}
-//			});
-//		}catch (Exception exception) {
-//			mTrimmerPromise.reject(exception);
-//		}
-		mTrimmerPromise.reject(new Error("No yet implemented"));
+        this.callback = callback;
+		if (activity == null) {
+            this.callback.invoke(E_ACTIVITY_DOES_NOT_EXIST, "Activity doesn't exist");
+			return;
+		}
+		this.getCurrentActivity().runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				RxPermissions rxPermissions = new RxPermissions(RNVideoTrimmerModule.this.getCurrentActivity());
+				try {
+					rxPermissions.request(Manifest.permission.READ_EXTERNAL_STORAGE).subscribe(new Consumer<Boolean>() {
+						@Override
+						public void accept(Boolean granted) throws Exception {
+
+							if (granted) {
+								Bundle bundle = new Bundle();
+								String videoPath = "";
+								bundle.putString(VIDEO_PATH_KEY, videoPath);
+								Intent intent = new Intent(getReactApplicationContext(), VideoTrimmerActivity.class);
+								intent.putExtras(bundle);
+								reactContext.startActivityForResult(intent, VIDEO_TRIM_REQUEST_CODE, bundle);
+							} else {
+								RNVideoTrimmerModule.this.callback.invoke(PERMISSION_DENIED_ERROR, PHOTO_LIBRARY_PERMISSIONS_NOT_GRANTED);
+							}
+						}
+					});
+				}catch (Exception e) {
+					RNVideoTrimmerModule.this.callback.invoke(e.getMessage());
+				}
+			}
+		});
+
 	}
 
 	@Override
@@ -99,12 +111,12 @@ public class RNVideoTrimmerModule extends ReactContextBaseJavaModule implements 
 			if(resultCode == RESULT_OK && data != null) {
 				JSONArray response = new JSONArray();
 				try {
-					mTrimmerPromise.resolve(convertJsonToArray(response));
+					this.callback.invoke(convertJsonToArray(response));
 				} catch (JSONException e) {
-					mTrimmerPromise.reject(e);
+					this.callback.invoke(e.getMessage());
 				}
 			} else {
-				mTrimmerPromise.reject(NO_RESULT_ERROR, NO_RESULT_ERROR);
+				this.callback.invoke(NO_RESULT_ERROR, NO_RESULT_ERROR);
 			}
 		}
 	}

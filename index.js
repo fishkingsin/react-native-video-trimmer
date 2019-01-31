@@ -24,7 +24,10 @@ module.exports = {
     if (typeof options === 'function') {
       callback = options;
       options = {};
-    }
+	}
+	if (!RNVideoTrimmer.showVideoTrimmer) {
+		throw new Error('showVideoTrimmer is not available on this platform');
+	}
     return RNVideoTrimmer.showVideoTrimmer({...DEFAULT_OPTIONS, ...options}, callback)
   }
 }
