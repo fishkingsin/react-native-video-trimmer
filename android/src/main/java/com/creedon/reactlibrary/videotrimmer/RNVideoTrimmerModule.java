@@ -1,16 +1,11 @@
 
 package com.creedon.reactlibrary.videotrimmer;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.StyleRes;
 
-import com.creedon.androidVideoTrimmer.features.trim.VideoTrimmerActivity;
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
@@ -21,7 +16,6 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
-import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,7 +24,6 @@ import org.json.JSONObject;
 import java.util.Iterator;
 
 import iknow.android.utils.BaseUtils;
-import io.reactivex.functions.Consumer;
 
 import static android.app.Activity.RESULT_OK;
 import static com.creedon.androidVideoTrimmer.features.trim.VideoTrimmerActivity.VIDEO_TRIM_REQUEST_CODE;
@@ -45,8 +38,7 @@ public class RNVideoTrimmerModule extends ReactContextBaseJavaModule implements 
 	private static final String VIDEO_PATH_KEY = "VIDEO_PATH_KEY";
 	private Promise mTrimmerPromise;
 	private ReadableMap options;
-	private int dialogThemeId;
-	public RNVideoTrimmerModule(ReactApplicationContext reactContext, @StyleRes final int dialogThemeId) {
+	public RNVideoTrimmerModule(ReactApplicationContext reactContext) {
 		super(reactContext);
 		this.reactContext = reactContext;
 		this.reactContext.addActivityEventListener(this);
@@ -57,37 +49,37 @@ public class RNVideoTrimmerModule extends ReactContextBaseJavaModule implements 
 		return getReactApplicationContext();
 	}
 
-	@SuppressLint("CheckResult")
 	@ReactMethod
-	public void showVideoTrimmer(ReadableMap options, final Promise promise) {
+	public void showVideoTrimmer(final ReadableMap options, final Promise promise) {
 		this.options = options;
 		final Activity activity = getCurrentActivity();
 		mTrimmerPromise = promise;
-		if (activity == null) {
-			promise.reject(E_ACTIVITY_DOES_NOT_EXIST, "Activity doesn't exist");
-			return;
-		}
-		RxPermissions rxPermissions = new RxPermissions(this.getCurrentActivity());
-		try {
-			rxPermissions.request(Manifest.permission.READ_EXTERNAL_STORAGE).subscribe(new Consumer<Boolean>() {
-				@Override
-				public void accept(Boolean granted) throws Exception {
-
-					if (granted) {
-						Bundle bundle = new Bundle();
-						String videoPath = "";
-						bundle.putString(VIDEO_PATH_KEY, videoPath);
-						Intent intent = new Intent(getReactApplicationContext(), VideoTrimmerActivity.class);
-						intent.putExtras(bundle);
-						reactContext.startActivityForResult(intent, VIDEO_TRIM_REQUEST_CODE, bundle);
-					} else {
-						mTrimmerPromise.reject(PERMISSION_DENIED_ERROR, PHOTO_LIBRARY_PERMISSIONS_NOT_GRANTED);
-					}
-				}
-			});
-		}catch (Exception exception) {
-			mTrimmerPromise.reject(exception);
-		}
+//		if (activity == null) {
+//			promise.reject(E_ACTIVITY_DOES_NOT_EXIST, "Activity doesn't exist");
+//			return;
+//		}
+//		RxPermissions rxPermissions = new RxPermissions(this.getCurrentActivity());
+//		try {
+//			rxPermissions.request(Manifest.permission.READ_EXTERNAL_STORAGE).subscribe(new Consumer<Boolean>() {
+//				@Override
+//				public void accept(Boolean granted) throws Exception {
+//
+//					if (granted) {
+//						Bundle bundle = new Bundle();
+//						String videoPath = "";
+//						bundle.putString(VIDEO_PATH_KEY, videoPath);
+//						Intent intent = new Intent(getReactApplicationContext(), VideoTrimmerActivity.class);
+//						intent.putExtras(bundle);
+//						reactContext.startActivityForResult(intent, VIDEO_TRIM_REQUEST_CODE, bundle);
+//					} else {
+//						mTrimmerPromise.reject(PERMISSION_DENIED_ERROR, PHOTO_LIBRARY_PERMISSIONS_NOT_GRANTED);
+//					}
+//				}
+//			});
+//		}catch (Exception exception) {
+//			mTrimmerPromise.reject(exception);
+//		}
+		mTrimmerPromise.reject(new Error("No yet implemented"));
 	}
 
 	@Override
@@ -103,15 +95,17 @@ public class RNVideoTrimmerModule extends ReactContextBaseJavaModule implements 
 
 	@Override
 	public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-		if (requestCode == VIDEO_TRIM_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
-			JSONArray response = new JSONArray();
-			try {
-				mTrimmerPromise.resolve(convertJsonToArray(response));
-			} catch (JSONException e) {
-				mTrimmerPromise.reject(e);
+		if (requestCode == VIDEO_TRIM_REQUEST_CODE ){
+			if(resultCode == RESULT_OK && data != null) {
+				JSONArray response = new JSONArray();
+				try {
+					mTrimmerPromise.resolve(convertJsonToArray(response));
+				} catch (JSONException e) {
+					mTrimmerPromise.reject(e);
+				}
+			} else {
+				mTrimmerPromise.reject(NO_RESULT_ERROR, NO_RESULT_ERROR);
 			}
-		} else {
-			mTrimmerPromise.reject(NO_RESULT_ERROR, NO_RESULT_ERROR);
 		}
 	}
 
@@ -167,9 +161,5 @@ public class RNVideoTrimmerModule extends ReactContextBaseJavaModule implements 
 			}
 		}
 		return array;
-	}
-
-	public int getDialogThemeId() {
-		return this.dialogThemeId;
 	}
 }
