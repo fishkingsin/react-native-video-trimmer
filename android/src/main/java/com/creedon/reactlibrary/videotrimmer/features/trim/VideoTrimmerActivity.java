@@ -20,18 +20,20 @@ public class VideoTrimmerActivity extends AppCompatActivity implements VideoTrim
 	public static final String VIDEO_PATH_KEY = "VIDEO_PATH_KEY";
 	private static final String COMPRESSED_VIDEO_FILE_NAME = "compress.mp4";
 	public static final int VIDEO_TRIM_REQUEST_CODE = 0x001;
+	public static final String MIN_LENGTH = "MIN_LENGTH";
+	public static final String MAX_LENGTH = "MAX_LENGTH";
 	public static final String START_MS_KEY = "START_MS_KEY";
 	public static final String END_MS_KEY = "END_MS_KEY";
 	private ActivityTrimmerLayoutBinding mBinding;
 	private ProgressDialog mProgressDialog;
 	private String videoPath;
 
-	public static void call(Activity from, String videoPath, long startMs, long endMs) {
+	public static void call(Activity from, String videoPath, long minLength, long maxLength) {
 		if (!TextUtils.isEmpty(videoPath)) {
 			Bundle bundle = new Bundle();
 			bundle.putString(VIDEO_PATH_KEY, videoPath);
-			bundle.putLong(START_MS_KEY, startMs);
-			bundle.putLong(END_MS_KEY, endMs);
+			bundle.putLong(MIN_LENGTH, minLength);
+			bundle.putLong(MAX_LENGTH, maxLength);
 			Intent intent = new Intent(from, VideoTrimmerActivity.class);
 			intent.putExtras(bundle);
 			from.startActivityForResult(intent, VIDEO_TRIM_REQUEST_CODE);
@@ -44,12 +46,12 @@ public class VideoTrimmerActivity extends AppCompatActivity implements VideoTrim
 		mBinding = DataBindingUtil.setContentView(this, R.layout.activity_trimmer_layout);
 		Bundle bd = getIntent().getExtras();
 		String path = "";
-		long startMS = -1;
-		long endMs = -1;
+		long minLength = -1;
+		long maxLength = -1;
 		if (bd != null) {
 			path = bd.getString(VIDEO_PATH_KEY);
-			startMS = bd.getLong(START_MS_KEY, -1);
-			endMs = bd.getLong(END_MS_KEY, -1);
+			minLength = bd.getLong(MIN_LENGTH, -1);
+			maxLength = bd.getLong(MAX_LENGTH, -1);
 		} else {
 			setResult(RESULT_CANCELED);
 			finish();
@@ -58,7 +60,7 @@ public class VideoTrimmerActivity extends AppCompatActivity implements VideoTrim
 			mBinding.trimmerView.setOnTrimVideoListener(this);
 			videoPath = path;
 			final String realPath = RealPathUtils.getRealPath(this, Uri.parse(path));
-			mBinding.trimmerView.initVideoByURI(Uri.parse(realPath), startMS, endMs);
+			mBinding.trimmerView.initVideoByURI(Uri.parse(realPath), minLength, maxLength);
 		}
 	}
 

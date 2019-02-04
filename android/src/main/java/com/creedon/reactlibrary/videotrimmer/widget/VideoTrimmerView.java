@@ -73,6 +73,9 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
 	private Handler mAnimationHandler = new Handler();
 	private long startMs = -1;
 	private long endMs = -1;
+	private TextView mVideoRangeTv;
+	private long minLenght;
+	private long maxLength;
 
 	public VideoTrimmerView(Context context, AttributeSet attrs) {
 		this(context, attrs, 0);
@@ -94,6 +97,7 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
 		mRedProgressIcon = findViewById(R.id.positionIcon);
 //		mVideoShootTipTv = findViewById(R.id.video_shoot_tip);
 		mVideoDurationTv = findViewById(R.id.video_duration_tv);
+		mVideoRangeTv = findViewById(R.id.video_range_tv);
 		mVideoThumbRecyclerView = findViewById(R.id.video_frames_recyclerView);
 		mVideoThumbRecyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
 		mVideoThumbAdapter = new VideoTrimmerAdapter(mContext);
@@ -127,11 +131,21 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
 
 		mAverageMsPx = mDuration * 1.0f / rangeWidth * 1.0f;
 		averagePxMs = (mMaxWidth * 1.0f / (mRightProgressPos - mLeftProgressPos));
+
+
+		mDuration = Math.round(mRightProgressPos - mLeftProgressPos);
+		String leftThumbsTime = DateUtil.convertSecondsToTime(mLeftProgressPos/1000);
+		String rightThumbsTime = DateUtil.convertSecondsToTime(mRightProgressPos/1000);
+		String durationTime =DateUtil.convertSecondsToTime(mDuration/1000);
+		mVideoRangeTv.setText(String.format("%s to %s", leftThumbsTime, rightThumbsTime));
+		mVideoDurationTv.setText(durationTime);
 	}
 
-	public void initVideoByURI(final Uri videoURI, final long startMs, final long endMs) {
-		this.startMs = startMs;
-		this.endMs = endMs;
+	public void initVideoByURI(final Uri videoURI, final long minLenght, final long maxLength) {
+		this.minLenght = minLenght;
+		this.maxLength = maxLength;
+//		this.startMs = startMs;
+//		this.endMs = endMs;
 		initVideoByURI(videoURI);
 	}
 
@@ -308,6 +322,7 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
 	}
 
 	private final RangeSeekBarView.OnRangeSeekBarChangeListener mOnRangeSeekBarChangeListener = new RangeSeekBarView.OnRangeSeekBarChangeListener() {
+		@SuppressLint("DefaultLocale")
 		@Override
 		public void onRangeSeekBarValuesChanged(RangeSeekBarView bar, long minValue, long maxValue, int action, boolean isMin,
 		                                        RangeSeekBarView.Thumb pressedThumb) {
@@ -334,11 +349,15 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
 					break;
 			}
 
-			String leftThumbsTime = DateUtil.convertSecondsToTime(mLeftProgressPos);
-			String rightThumbsTime = DateUtil.convertSecondsToTime(mRightProgressPos);
+			String leftThumbsTime = DateUtil.convertSecondsToTime(mLeftProgressPos/1000);
+			String rightThumbsTime = DateUtil.convertSecondsToTime(mRightProgressPos/1000);
+			mDuration = Math.round(mRightProgressPos - mLeftProgressPos);
+			String durationTime =DateUtil.convertSecondsToTime(mDuration/1000);
 			Log.d(TAG, "-----leftThumbsTime----->>>>>>" + leftThumbsTime);
 			Log.d(TAG, "-----rightThumbsTime----->>>>>>" + rightThumbsTime);
-
+			Log.d(TAG, "-----durationTime----->>>>>>" + durationTime);
+			mVideoRangeTv.setText(String.format("%s to %s", leftThumbsTime, rightThumbsTime));
+			mVideoDurationTv.setText(durationTime);
 			mRangeSeekBarView.setStartEndTime(mLeftProgressPos, mRightProgressPos);
 		}
 	};
@@ -379,7 +398,13 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
 				mRedProgressIcon.setVisibility(GONE);
 				seekTo(mLeftProgressPos);
 				mRangeSeekBarView.setStartEndTime(mLeftProgressPos, mRightProgressPos);
-				mRangeSeekBarView.invalidate();
+                mRangeSeekBarView.invalidate();
+
+
+                String leftThumbsTime = DateUtil.convertSecondsToTime(mLeftProgressPos/1000);
+                String rightThumbsTime = DateUtil.convertSecondsToTime(mRightProgressPos/1000);
+                mVideoRangeTv.setText(String.format("%s to %s", leftThumbsTime, rightThumbsTime));
+                mRangeSeekBarView.setStartEndTime(mLeftProgressPos, mRightProgressPos);
 			}
 			lastScrollX = scrollX;
 		}

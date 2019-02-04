@@ -79,10 +79,10 @@ public class RNVideoTrimmerModule extends ReactContextBaseJavaModule implements 
 
 							if (granted) {
 								String videoPath = RNVideoTrimmerModule.this.options.getString("uri");
-								long startMs = RNVideoTrimmerModule.this.options.getInt("minLength");
-								long endMs = RNVideoTrimmerModule.this.options.getInt("maxLength");
+								long minLength = RNVideoTrimmerModule.this.options.getInt("minLength");
+								long maxLength = RNVideoTrimmerModule.this.options.getInt("maxLength");
 
-								VideoTrimmerActivity.call(getReactApplicationContext().getCurrentActivity(), videoPath, startMs, endMs);
+								VideoTrimmerActivity.call(getReactApplicationContext().getCurrentActivity(), videoPath, minLength, maxLength);
 							} else {
 								RNVideoTrimmerModule.this.callback.invoke(RNVideoTrimmerModule.this.createErrorMap(PHOTO_LIBRARY_PERMISSIONS_NOT_GRANTED));
 							}
@@ -122,8 +122,8 @@ public class RNVideoTrimmerModule extends ReactContextBaseJavaModule implements 
 
 					try {
 						object.put("uri", path);
-						object.put("minLength", startMS);
-						object.put("maxLength", endMs);
+						object.put("startTime", startMS);
+						object.put("endTime", endMs);
 						response.put(object);
 						this.callback.invoke(convertJsonToArray(response));
 					} catch (JSONException e) {

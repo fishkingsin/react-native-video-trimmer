@@ -65,7 +65,7 @@ public class RangeSeekBarView extends View {
 	private OnRangeSeekBarChangeListener mRangeSeekBarChangeListener;
 	private int blueColorRes = getContext().getResources().getColor(R.color.nixplay_element_color);
 	private int orangeColorRes = getContext().getResources().getColor(R.color.nixplay_orange_color);
-
+	private int rangeBarHorizontalPadding = UnitConverter.dpToPx(10);
 	public enum Thumb {
 		MIN, MAX
 	}
@@ -97,8 +97,8 @@ public class RangeSeekBarView extends View {
 
 		int width = thumbImageLeft.getWidth();
 		int height = thumbImageLeft.getHeight();
-		int newWidth = UnitConverter.dpToPx(11);
-		int newHeight = UnitConverter.dpToPx(55);
+		int newWidth = UnitConverter.dpToPx(12);
+		int newHeight = UnitConverter.dpToPx(41);
 		float scaleWidth = newWidth * 1.0f / width;
 		float scaleHeight = newHeight * 1.0f / height;
 		Matrix matrix = new Matrix();
@@ -158,24 +158,36 @@ public class RangeSeekBarView extends View {
 		super.onDraw(canvas);
 		float bg_middle_left = 0;
 		float bg_middle_right = getWidth() - getPaddingRight();
-		float rangeL = normalizedToScreen(normalizedMinValue);
-		float rangeR = normalizedToScreen(normalizedMaxValue);
-		Rect leftRect = new Rect((int) bg_middle_left, getHeight(), (int) rangeL, 0);
-		Rect rightRect = new Rect((int) rangeR, getHeight(), (int) bg_middle_right, 0);
+		float rangeL = normalizedToScreen(normalizedMinValue)+rangeBarHorizontalPadding;
+		float rangeR = normalizedToScreen(normalizedMaxValue)-rangeBarHorizontalPadding;
+		Rect leftRect = new Rect((int) bg_middle_left, getHeight() + paddingTop, (int) rangeL, paddingTop);
+		Rect rightRect = new Rect((int) rangeR, getHeight() + paddingTop, (int) bg_middle_right, paddingTop);
 		canvas.drawRect(leftRect, mShadow);
 		canvas.drawRect(rightRect, mShadow);
 
-		canvas.drawRect(rangeL, thumbPaddingTop + paddingTop, rangeR, thumbPaddingTop + UnitConverter.dpToPx(2) + paddingTop, rectPaint);
-		canvas.drawRect(rangeL, getHeight() - UnitConverter.dpToPx(2), rangeR, getHeight(), rectPaint);
+		canvas.drawRect(rangeL,
+				thumbPaddingTop + paddingTop,
+				rangeR,
+				thumbPaddingTop + UnitConverter.dpToPx(1) + paddingTop,
+				rectPaint);
+		canvas.drawRect(rangeL,
+				getHeight() - UnitConverter.dpToPx(1),
+				rangeR,
+				getHeight(),
+				rectPaint);
 
-		drawThumb(normalizedToScreen(normalizedMinValue), isTouchDown, canvas, true);
-		drawThumb(normalizedToScreen(normalizedMaxValue), isTouchDown, canvas, false);
+		drawThumb(normalizedMinValue, ((normalizedMinValue != 0 || normalizedMaxValue != 1) || isTouchDown), canvas, true);
+		drawThumb(normalizedMaxValue, ((normalizedMinValue != 0 || normalizedMaxValue != 1) || isTouchDown), canvas, false);
 		// customised
 		// drawVideoTrimTimeText(canvas);
 	}
 
-	private void drawThumb(float screenCoord, boolean pressed, Canvas canvas, boolean isLeft) {
-		canvas.drawBitmap(pressed ? (isLeft ? thumbPressedImageLeft : thumbPressedImageRight) : (isLeft ? thumbImageLeft : thumbImageRight), screenCoord - (isLeft ? 0 : thumbWidth), paddingTop,
+	private void drawThumb(double normalizedValue, boolean highlight, Canvas canvas, boolean isLeft) {
+		canvas.drawBitmap(highlight ?
+						(isLeft ? thumbPressedImageLeft : thumbPressedImageRight) :
+						(isLeft ? thumbImageLeft : thumbImageRight),
+				normalizedToScreen(normalizedValue) - (isLeft ? 0 : thumbWidth),
+				paddingTop,
 				paint);
 	}
 
@@ -310,6 +322,12 @@ public class RangeSeekBarView extends View {
 			setNormalizedMinValue(screenToNormalized(x, 0));
 		} else if (Thumb.MAX.equals(pressedThumb)) {
 			setNormalizedMaxValue(screenToNormalized(x, 1));
+		}
+
+		if (normalizedMinValue != 0 || normalizedMaxValue != 1) {
+			rectPaint.setColor(orangeColorRes);
+		} else {
+			rectPaint.setColor(blueColorRes);
 		}
 	}
 
