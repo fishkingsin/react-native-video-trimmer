@@ -39,7 +39,8 @@ public class RangeSeekBarView extends View {
   private int mScaledTouchSlop;
   private Bitmap thumbImageLeft;
   private Bitmap thumbImageRight;
-  private Bitmap thumbPressedImage;
+  private Bitmap thumbPressedImageLeft;
+  private Bitmap thumbPressedImageRight;
   private Paint paint;
   private Paint rectPaint;
   private final Paint mVideoTrimTimePaintL = new Paint();
@@ -59,7 +60,8 @@ public class RangeSeekBarView extends View {
   private double min_width = 1;//最小裁剪距离
   private boolean notifyWhileDragging = false;
   private OnRangeSeekBarChangeListener mRangeSeekBarChangeListener;
-  private int whiteColorRes = getContext().getResources().getColor(R.color.white);
+  private int blueColorRes = getContext().getResources().getColor(R.color.nixplay_element_color);
+  private int orangeColorRes = getContext().getResources().getColor(R.color.nixplay_orange_color);
 
   public enum Thumb {
     MIN, MAX
@@ -88,7 +90,7 @@ public class RangeSeekBarView extends View {
 
   private void init() {
     mScaledTouchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
-    thumbImageLeft = BitmapFactory.decodeResource(getResources(), R.drawable.icon_video_thumb_handle);
+    thumbImageLeft = BitmapFactory.decodeResource(getResources(), R.drawable.icon_video_thumb_handle_left);
 
     int width = thumbImageLeft.getWidth();
     int height = thumbImageLeft.getHeight();
@@ -99,8 +101,9 @@ public class RangeSeekBarView extends View {
     Matrix matrix = new Matrix();
     matrix.postScale(scaleWidth, scaleHeight);
     thumbImageLeft = Bitmap.createBitmap(thumbImageLeft, 0, 0, width, height, matrix, true);
-    thumbImageRight = thumbImageLeft;
-    thumbPressedImage = thumbImageLeft;
+    thumbImageRight = BitmapFactory.decodeResource(getResources(), R.drawable.icon_video_thumb_handle_right);
+    thumbPressedImageLeft = BitmapFactory.decodeResource(getResources(), R.drawable.icon_video_thumb_handle_left_pressed);
+    thumbPressedImageRight = BitmapFactory.decodeResource(getResources(), R.drawable.icon_video_thumb_handle_right_pressed);
     thumbWidth = newWidth;
     thumbHalfWidth = thumbWidth / 2;
     int shadowColor = getContext().getResources().getColor(R.color.shadow_color);
@@ -110,20 +113,20 @@ public class RangeSeekBarView extends View {
     paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     rectPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     rectPaint.setStyle(Paint.Style.FILL);
-    rectPaint.setColor(whiteColorRes);
+    rectPaint.setColor(blueColorRes);
 
     mVideoTrimTimePaintL.setStrokeWidth(3);
     mVideoTrimTimePaintL.setARGB(255, 51, 51, 51);
     mVideoTrimTimePaintL.setTextSize(28);
     mVideoTrimTimePaintL.setAntiAlias(true);
-    mVideoTrimTimePaintL.setColor(whiteColorRes);
+    mVideoTrimTimePaintL.setColor(blueColorRes);
     mVideoTrimTimePaintL.setTextAlign(Paint.Align.LEFT);
 
     mVideoTrimTimePaintR.setStrokeWidth(3);
     mVideoTrimTimePaintR.setARGB(255, 51, 51, 51);
     mVideoTrimTimePaintR.setTextSize(28);
     mVideoTrimTimePaintR.setAntiAlias(true);
-    mVideoTrimTimePaintR.setColor(whiteColorRes);
+    mVideoTrimTimePaintR.setColor(blueColorRes);
     mVideoTrimTimePaintR.setTextAlign(Paint.Align.RIGHT);
   }
 
@@ -153,13 +156,14 @@ public class RangeSeekBarView extends View {
     canvas.drawRect(rangeL, thumbPaddingTop + paddingTop, rangeR, thumbPaddingTop + UnitConverter.dpToPx(2) + paddingTop, rectPaint);
     canvas.drawRect(rangeL, getHeight() - UnitConverter.dpToPx(2), rangeR, getHeight(), rectPaint);
 
-    drawThumb(normalizedToScreen(normalizedMinValue), false, canvas, true);
-    drawThumb(normalizedToScreen(normalizedMaxValue), false, canvas, false);
-    drawVideoTrimTimeText(canvas);
+    drawThumb(normalizedToScreen(normalizedMinValue), isTouchDown, canvas, true);
+    drawThumb(normalizedToScreen(normalizedMaxValue), isTouchDown, canvas, false);
+    // customised
+    // drawVideoTrimTimeText(canvas);
   }
 
   private void drawThumb(float screenCoord, boolean pressed, Canvas canvas, boolean isLeft) {
-    canvas.drawBitmap(pressed ? thumbPressedImage : (isLeft ? thumbImageLeft : thumbImageRight), screenCoord - (isLeft ? 0 : thumbWidth), paddingTop,
+    canvas.drawBitmap(pressed ? (isLeft ? thumbPressedImageLeft : thumbPressedImageRight) : (isLeft ? thumbImageLeft : thumbImageRight), screenCoord - (isLeft ? 0 : thumbWidth), paddingTop,
         paint);
   }
 

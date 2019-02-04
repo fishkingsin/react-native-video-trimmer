@@ -6,6 +6,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 
 import com.creedon.reactlibrary.videotrimmer.features.trim.VideoTrimmerActivity;
@@ -31,16 +32,19 @@ import iknow.android.utils.BaseUtils;
 import io.reactivex.functions.Consumer;
 
 import static android.app.Activity.RESULT_OK;
+import static com.creedon.reactlibrary.videotrimmer.features.trim.VideoTrimmerActivity.END_MS_KEY;
+import static com.creedon.reactlibrary.videotrimmer.features.trim.VideoTrimmerActivity.START_MS_KEY;
+import static com.creedon.reactlibrary.videotrimmer.features.trim.VideoTrimmerActivity.VIDEO_PATH_KEY;
 import static com.creedon.reactlibrary.videotrimmer.features.trim.VideoTrimmerActivity.VIDEO_TRIM_REQUEST_CODE;
 
 public class RNVideoTrimmerModule extends ReactContextBaseJavaModule implements ActivityEventListener {
 
 	private final ReactApplicationContext reactContext;
 	private static final String E_ACTIVITY_DOES_NOT_EXIST = "E_ACTIVITY_DOES_NOT_EXIST";
+	private static final String K_ERROR = "K_ERROR";
 	private static final String NO_RESULT_ERROR = "NO_RESULT_ERROR";
 	private static final String PERMISSION_DENIED_ERROR = "PERMISSION_DENIED";
 	private static final String PHOTO_LIBRARY_PERMISSIONS_NOT_GRANTED = "Photo library permissions not granted";
-	private static final String VIDEO_PATH_KEY = "VIDEO_PATH_KEY";
     private ReadableMap options;
     private Callback callback;
 	public RNVideoTrimmerModule(ReactApplicationContext reactContext) {
@@ -61,7 +65,7 @@ public class RNVideoTrimmerModule extends ReactContextBaseJavaModule implements 
 		final Activity activity = getCurrentActivity();
         this.callback = callback;
 		if (activity == null) {
-            this.callback.invoke(E_ACTIVITY_DOES_NOT_EXIST, "Activity doesn't exist");
+            this.callback.invoke(this.createErrorMap(E_ACTIVITY_DOES_NOT_EXIST));
 			return;
 		}
 		this.getCurrentActivity().runOnUiThread(new Runnable() {
@@ -74,19 +78,18 @@ public class RNVideoTrimmerModule extends ReactContextBaseJavaModule implements 
 						public void accept(Boolean granted) throws Exception {
 
 							if (granted) {
-//								Bundle bundle = new Bundle();
 								String videoPath = RNVideoTrimmerModule.this.options.getString("uri");
-								Integer minLength = RNVideoTrimmerModule.this.options.getInt("minLength");
-								Integer maxLength = RNVideoTrimmerModule.this.options.getInt("maxLength");
+								long startMs = RNVideoTrimmerModule.this.options.getInt("minLength");
+								long endMs = RNVideoTrimmerModule.this.options.getInt("maxLength");
 
-								VideoTrimmerActivity.call(getReactApplicationContext().getCurrentActivity(), videoPath);
+								VideoTrimmerActivity.call(getReactApplicationContext().getCurrentActivity(), videoPath, startMs, endMs);
 							} else {
-								RNVideoTrimmerModule.this.callback.invoke(PERMISSION_DENIED_ERROR, PHOTO_LIBRARY_PERMISSIONS_NOT_GRANTED);
+								RNVideoTrimmerModule.this.callback.invoke(RNVideoTrimmerModule.this.createErrorMap(PHOTO_LIBRARY_PERMISSIONS_NOT_GRANTED));
 							}
 						}
 					});
 				}catch (Exception e) {
-					RNVideoTrimmerModule.this.callback.invoke(e.getMessage());
+					RNVideoTrimmerModule.this.callback.invoke(RNVideoTrimmerModule.this.createErrorMap(e.getMessage()));
 				}
 			}
 		});
@@ -108,16 +111,35 @@ public class RNVideoTrimmerModule extends ReactContextBaseJavaModule implements 
 	public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
 		if (requestCode == VIDEO_TRIM_REQUEST_CODE ){
 			if(resultCode == RESULT_OK && data != null) {
-				JSONArray response = new JSONArray();
-				try {
-					this.callback.invoke(convertJsonToArray(response));
-				} catch (JSONException e) {
-					this.callback.invoke(e.getMessage());
+
+				Bundle extra = data.getExtras();
+				String path = extra.getString(VIDEO_PATH_KEY,"");
+				long startMS = extra.getLong(START_MS_KEY,-1);
+				long endMs = extra.getLong(END_MS_KEY,-1);
+				if(startMS != -1 && endMs != -1) {
+					JSONArray response = new JSONArray();
+					JSONObject object = new JSONObject();
+
+					try {
+						object.put("uri", path);
+						object.put("minLength", startMS);
+						object.put("maxLength", endMs);
+						response.put(object);
+						this.callback.invoke(convertJsonToArray(response));
+					} catch (JSONException e) {
+						this.callback.invoke(this.createErrorMap(e.getMessage()));
+					}
 				}
 			} else {
-				this.callback.invoke(NO_RESULT_ERROR, NO_RESULT_ERROR);
+				this.callback.invoke(this.createErrorMap(NO_RESULT_ERROR));
 			}
 		}
+	}
+
+	private WritableMap createErrorMap(String message) {
+		WritableMap map = Arguments.createMap();
+		map.putString(K_ERROR, message);
+		return map;
 	}
 
 	@Override

@@ -17,16 +17,21 @@ import com.creedon.reactlibrary.videotrimmer.utils.RealPathUtils;
 public class VideoTrimmerActivity extends AppCompatActivity implements VideoTrimListener {
 
 	private static final String TAG = "jason";
-	private static final String VIDEO_PATH_KEY = "video-file-path";
+	public static final String VIDEO_PATH_KEY = "VIDEO_PATH_KEY";
 	private static final String COMPRESSED_VIDEO_FILE_NAME = "compress.mp4";
 	public static final int VIDEO_TRIM_REQUEST_CODE = 0x001;
+	public static final String START_MS_KEY = "START_MS_KEY";
+	public static final String END_MS_KEY = "END_MS_KEY";
 	private ActivityTrimmerLayoutBinding mBinding;
 	private ProgressDialog mProgressDialog;
+	private String videoPath;
 
-	public static void call(Activity from, String videoPath) {
+	public static void call(Activity from, String videoPath, long startMs, long endMs) {
 		if (!TextUtils.isEmpty(videoPath)) {
 			Bundle bundle = new Bundle();
 			bundle.putString(VIDEO_PATH_KEY, videoPath);
+			bundle.putLong(START_MS_KEY, startMs);
+			bundle.putLong(END_MS_KEY, endMs);
 			Intent intent = new Intent(from, VideoTrimmerActivity.class);
 			intent.putExtras(bundle);
 			from.startActivityForResult(intent, VIDEO_TRIM_REQUEST_CODE);
@@ -39,11 +44,21 @@ public class VideoTrimmerActivity extends AppCompatActivity implements VideoTrim
 		mBinding = DataBindingUtil.setContentView(this, R.layout.activity_trimmer_layout);
 		Bundle bd = getIntent().getExtras();
 		String path = "";
-		if (bd != null) path = bd.getString(VIDEO_PATH_KEY);
+		long startMS = -1;
+		long endMs = -1;
+		if (bd != null) {
+			path = bd.getString(VIDEO_PATH_KEY);
+			startMS = bd.getLong(START_MS_KEY, -1);
+			endMs = bd.getLong(END_MS_KEY, -1);
+		} else {
+			setResult(RESULT_CANCELED);
+			finish();
+		}
 		if (mBinding.trimmerView != null) {
 			mBinding.trimmerView.setOnTrimVideoListener(this);
+			videoPath = path;
 			final String realPath = RealPathUtils.getRealPath(this, Uri.parse(path));
-			mBinding.trimmerView.initVideoByURI(Uri.parse(realPath));
+			mBinding.trimmerView.initVideoByURI(Uri.parse(realPath), startMS, endMs);
 		}
 	}
 
@@ -67,16 +82,14 @@ public class VideoTrimmerActivity extends AppCompatActivity implements VideoTrim
 
 	@Override
 	public void onStartTrim() {
-		buildDialog(getResources().getString(R.string.trimming)).show();
 	}
 
 	@Override
 	public void onFinishTrim(String inputFile, long startMs, long endMs) {
-		if (mProgressDialog.isShowing()) mProgressDialog.dismiss();
-
-
 		Bundle conData = new Bundle();
-
+		conData.putString(VIDEO_PATH_KEY,videoPath);
+		conData.putLong(START_MS_KEY,startMs);
+		conData.putLong(END_MS_KEY,endMs);
 		Intent intent = new Intent();
 		intent.putExtras(conData);
 		setResult(RESULT_OK, intent);
@@ -104,11 +117,11 @@ public class VideoTrimmerActivity extends AppCompatActivity implements VideoTrim
 		finish();
 	}
 
-	private ProgressDialog buildDialog(String msg) {
-		if (mProgressDialog == null) {
-			mProgressDialog = ProgressDialog.show(this, "", msg);
-		}
-		mProgressDialog.setMessage(msg);
-		return mProgressDialog;
-	}
+//	private ProgressDialog buildDialog(String msg) {
+//		if (mProgressDialog == null) {
+//			mProgressDialog = ProgressDialog.show(this, "", msg);
+//		}
+//		mProgressDialog.setMessage(msg);
+//		return mProgressDialog;
+//	}
 }
