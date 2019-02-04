@@ -16,11 +16,14 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+
 import com.creedon.reactlibrary.videotrimmer.R;
 import com.creedon.reactlibrary.videotrimmer.features.trim.VideoTrimmerUtil;
+
+import java.text.DecimalFormat;
+
 import iknow.android.utils.DateUtil;
 import iknow.android.utils.UnitConverter;
-import java.text.DecimalFormat;
 
 public class RangeSeekBarView extends View {
   private static final String TAG = RangeSeekBarView.class.getSimpleName();
@@ -101,9 +104,15 @@ public class RangeSeekBarView extends View {
     Matrix matrix = new Matrix();
     matrix.postScale(scaleWidth, scaleHeight);
     thumbImageLeft = Bitmap.createBitmap(thumbImageLeft, 0, 0, width, height, matrix, true);
+
     thumbImageRight = BitmapFactory.decodeResource(getResources(), R.drawable.icon_video_thumb_handle_right);
+    thumbImageRight = Bitmap.createBitmap(thumbImageRight, 0, 0, width, height, matrix, true);
+
     thumbPressedImageLeft = BitmapFactory.decodeResource(getResources(), R.drawable.icon_video_thumb_handle_left_pressed);
+    thumbPressedImageLeft = Bitmap.createBitmap(thumbPressedImageLeft, 0, 0, width, height, matrix, true);
     thumbPressedImageRight = BitmapFactory.decodeResource(getResources(), R.drawable.icon_video_thumb_handle_right_pressed);
+    thumbPressedImageRight = Bitmap.createBitmap(thumbPressedImageRight, 0, 0, width, height, matrix, true);
+
     thumbWidth = newWidth;
     thumbHalfWidth = thumbWidth / 2;
     int shadowColor = getContext().getResources().getColor(R.color.shadow_color);
