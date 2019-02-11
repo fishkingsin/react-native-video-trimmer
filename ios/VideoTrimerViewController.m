@@ -32,12 +32,13 @@
 @property (weak, nonatomic) IBOutlet UIView *videoLayer;
 @property (weak, nonatomic) IBOutlet UILabel *durationLabel;
 @property (weak, nonatomic) IBOutlet UILabel *rangeLabel;
+@property (weak, nonatomic) IBOutlet UIProgressView *progressBar;
 
 @property (assign, nonatomic) CGFloat startTime;
 @property (assign, nonatomic) CGFloat stopTime;
 
 @property (strong, nonatomic) AVAsset *asset;
-
+@property (nonatomic, assign) PHImageRequestID assetRequestID;
 @property (assign, nonatomic) BOOL restartOnPlay;
 @end
 
@@ -87,6 +88,7 @@
 
     PHAsset *phAsset = [results firstObject];
     PHVideoRequestOptions *options = [self getVideoRequestOptions];
+    [self.progressBar setHidden:YES];
     options.progressHandler = ^(double progress, NSError * _Nullable error, BOOL * _Nonnull stop, NSDictionary * _Nullable info) {
         if(error) {
             if([self.delegate respondsToSelector:@selector(videoTrimerViewController:didFailedWithError:)])
@@ -95,9 +97,17 @@
             }
         } else {
             //do progress bar
+			dispatch_async(dispatch_get_main_queue(), ^{
+                if(progress < 1.0) {
+                    [self.progressBar setHidden:NO];
+                    [self.progressBar setProgress:progress];
+                } else {
+                    [self.progressBar setHidden:YES];
+                }
+			});
         }
     };
-    [[PHImageManager defaultManager] requestAVAssetForVideo:phAsset options:options resultHandler:^(AVAsset * _Nullable avAsset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
+    self.assetRequestID = [[PHImageManager defaultManager] requestAVAssetForVideo:phAsset options:options resultHandler:^(AVAsset * _Nullable avAsset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
 
         if (avAsset != nil) {
             if([avAsset isKindOfClass:[AVURLAsset class]]){
@@ -165,7 +175,7 @@
     return videoRequestOptions;
 }
 - (IBAction)onCancelPressed:(id)sender {
-    
+    [[PHImageManager defaultManager] cancelImageRequest: self.assetRequestID];
     if (self.isPlaying) {
         [self.player pause];
         [self stopPlaybackTimeChecker];

@@ -1,0 +1,62 @@
+<resources>
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowExitAnimation">@android:anim/fade_out</item>
+        <!--<item name="android:windowBackground">@drawable/launch_screen_bitmap</item>-->
+    </style>
+
+    <style name="customTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">#62b1e6</item>
+        <item name="colorPrimaryDark">#62b1e6</item>
+    </style>
+
+    <style name="CameraPluginAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+    <style name="buttonTextView">
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+    <style name="DefaultExplainingPermissionsTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <!-- Used for the buttons -->
+        <item name="colorAccent">#61c3e7</item>
+        <!-- Used for the title and text -->
+        <item name="android:textColorPrimary">#3d3d3d</item>
+        <!-- Used for the background -->
+        <item name="android:background">@android:color/white</item>
+    </style>
+
+    <style name="Toolbar.Nixplay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+
+    </style>
+
+    <style name="Popup.Nixplay" parent="Widget.AppCompat.ListPopupWindow">
+        <item name="android:popupBackground">@color/nixplay_album_popup_bg</item>
+    </style>
+
+    <style name="Nixplay.Light" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@color/nixplay_primary</item>
+        <item name="colorPrimaryDark">@color/nixplay_primary_dark</item>
+        <item name="toolbar">@style/Toolbar.Nixplay</item>
+        <item name="album.dropdown.title.color">@color/nixplay_album_dropdown_title_text</item>
+        <item name="album.dropdown.count.color">@color/nixplay_album_dropdown_count_text</item>
+        <item name="album.element.color">@color/nixplay_element_color</item>
+        <item name="album.thumbnail.placeholder">@color/nixplay_album_dropdown_thumbnail_placeholder</item>
+        <item name="album.emptyView">@drawable/ic_empty_nixplay</item>
+        <item name="album.emptyView.textColor">@color/nixplay_album_empty_view</item>
+        <item name="item.placeholder">@color/nixplay_item_placeholder</item>
+        <item name="item.checkCircle.backgroundColor">@color/nixplay_item_checkCircle_backgroundColor</item>
+        <item name="item.checkCircle.borderColor">@color/nixplay_item_checkCircle_borderColor</item>
+        <item name="page.bg">@color/nixplay_page_bg</item>
+        <item name="bottomToolbar.bg">@color/nixplay_bottom_toolbar_bg</item>
+        <item name="bottomToolbar.preview.textColor">@color/nixplay_bottom_toolbar_preview</item>
+        <item name="bottomToolbar.apply.textColor">@color/nixplay_bottom_toolbar_apply</item>
+        <item name="preview.bottomToolbar.back.textColor">@color/nixplay_preview_bottom_toolbar_back_text</item>
+        <item name="preview.bottomToolbar.apply.textColor">@color/nixplay_preview_bottom_toolbar_apply</item>
+        <item name="android:listPopupWindowStyle">@style/Popup.Nixplay</item>
+        <item name="listPopupWindowStyle">@style/Popup.Nixplay</item>
+        <item name="capture.textColor">@color/nixplay_capture</item>
+    </style>
+</resources>
