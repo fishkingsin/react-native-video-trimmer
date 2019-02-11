@@ -41,7 +41,7 @@ public class RNVideoTrimmerModule extends ReactContextBaseJavaModule implements 
 
 	private final ReactApplicationContext reactContext;
 	private static final String E_ACTIVITY_DOES_NOT_EXIST = "E_ACTIVITY_DOES_NOT_EXIST";
-	private static final String K_ERROR = "K_ERROR";
+	private static final String K_ERROR = "error";
 	private static final String NO_RESULT_ERROR = "NO_RESULT_ERROR";
 	private static final String PERMISSION_DENIED_ERROR = "PERMISSION_DENIED";
 	private static final String PHOTO_LIBRARY_PERMISSIONS_NOT_GRANTED = "Photo library permissions not granted";
@@ -114,18 +114,16 @@ public class RNVideoTrimmerModule extends ReactContextBaseJavaModule implements 
 
 				Bundle extra = data.getExtras();
 				String path = extra.getString(VIDEO_PATH_KEY,"");
-				long startMS = extra.getLong(START_MS_KEY,-1);
-				long endMs = extra.getLong(END_MS_KEY,-1);
+				Long startMS = extra.getLong(START_MS_KEY,-1);
+				Long endMs = extra.getLong(END_MS_KEY,-1);
 				if(startMS != -1 && endMs != -1) {
-					JSONArray response = new JSONArray();
 					JSONObject object = new JSONObject();
 
 					try {
 						object.put("uri", path);
-						object.put("startTime", startMS);
-						object.put("endTime", endMs);
-						response.put(object);
-						this.callback.invoke(convertJsonToArray(response));
+						object.put("startTime", (double)(startMS/1000f));
+						object.put("endTime", (double)(endMs/1000f));
+						this.callback.invoke(convertJsonToMap(object));
 					} catch (JSONException e) {
 						this.callback.invoke(this.createErrorMap(e.getMessage()));
 					}
