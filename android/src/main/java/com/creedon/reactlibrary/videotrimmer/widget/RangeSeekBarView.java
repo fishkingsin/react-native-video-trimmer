@@ -65,7 +65,9 @@ public class RangeSeekBarView extends View {
 	private OnRangeSeekBarChangeListener mRangeSeekBarChangeListener;
 	private int blueColorRes = getContext().getResources().getColor(R.color.nixplay_element_color);
 	private int orangeColorRes = getContext().getResources().getColor(R.color.nixplay_orange_color);
-	private int rangeBarHorizontalPadding = UnitConverter.dpToPx(10);
+	private int rangeBarHorizontalPadding = UnitConverter.dpToPx(12);
+	private int rectHeight = UnitConverter.dpToPx(1);
+
 	public enum Thumb {
 		MIN, MAX
 	}
@@ -98,7 +100,7 @@ public class RangeSeekBarView extends View {
 		int width = thumbImageLeft.getWidth();
 		int height = thumbImageLeft.getHeight();
 		int newWidth = UnitConverter.dpToPx(12);
-		int newHeight = UnitConverter.dpToPx(41);
+		int newHeight = UnitConverter.dpToPx(40);
 		float scaleWidth = newWidth * 1.0f / width;
 		float scaleHeight = newHeight * 1.0f / height;
 		Matrix matrix = new Matrix();
@@ -168,10 +170,10 @@ public class RangeSeekBarView extends View {
 		canvas.drawRect(rangeL,
 				thumbPaddingTop + paddingTop,
 				rangeR,
-				thumbPaddingTop + UnitConverter.dpToPx(1) + paddingTop,
+				thumbPaddingTop + rectHeight + paddingTop,
 				rectPaint);
 		canvas.drawRect(rangeL,
-				getHeight() - UnitConverter.dpToPx(1),
+				getHeight() - rectHeight,
 				rangeR,
 				getHeight(),
 				rectPaint);
