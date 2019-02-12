@@ -45,8 +45,9 @@ public class RNVideoTrimmerModule extends ReactContextBaseJavaModule implements 
 	private static final String NO_RESULT_ERROR = "NO_RESULT_ERROR";
 	private static final String PERMISSION_DENIED_ERROR = "PERMISSION_DENIED";
 	private static final String PHOTO_LIBRARY_PERMISSIONS_NOT_GRANTED = "Photo library permissions not granted";
-    private ReadableMap options;
-    private Callback callback;
+	private ReadableMap options;
+	private Callback callback;
+
 	public RNVideoTrimmerModule(ReactApplicationContext reactContext) {
 		super(reactContext);
 		this.reactContext = reactContext;
@@ -63,9 +64,38 @@ public class RNVideoTrimmerModule extends ReactContextBaseJavaModule implements 
 	public void showVideoTrimmer(final ReadableMap options, Callback callback) {
 		this.options = options;
 		final Activity activity = getCurrentActivity();
-        this.callback = callback;
+		this.callback = callback;
+
+		final String videoPath;
+		if (this.options.hasKey("uri")) {
+			videoPath = this.options.getString("uri");
+		} else {
+			this.callback.invoke(this.createErrorMap("key uri not exist"));
+			return;
+		}
+		final long minLength;
+		if (this.options.hasKey("minLength")) {
+			minLength = this.options.getInt("minLength") * 1000;
+		} else {
+			this.callback.invoke(this.createErrorMap("key minLength not exist"));
+			return;
+		}
+		final long maxLength;
+		if (this.options.hasKey("maxLength")) {
+			maxLength = this.options.getInt("maxLength") * 1000;
+		} else {
+			this.callback.invoke(this.createErrorMap("key maxLength not exist"));
+			return;
+		}
+		final boolean transcode;
+		if (this.options.hasKey("transcode")) {
+			transcode = this.options.getBoolean("transcode");
+		} else {
+			transcode = false;
+		}
+
 		if (activity == null) {
-            this.callback.invoke(this.createErrorMap(E_ACTIVITY_DOES_NOT_EXIST));
+			this.callback.invoke(this.createErrorMap(E_ACTIVITY_DOES_NOT_EXIST));
 			return;
 		}
 		this.getCurrentActivity().runOnUiThread(new Runnable() {
@@ -78,17 +108,15 @@ public class RNVideoTrimmerModule extends ReactContextBaseJavaModule implements 
 						public void accept(Boolean granted) throws Exception {
 
 							if (granted) {
-								String videoPath = RNVideoTrimmerModule.this.options.getString("uri");
-								long minLength = RNVideoTrimmerModule.this.options.getInt("minLength");
-								long maxLength = RNVideoTrimmerModule.this.options.getInt("maxLength");
 
-								VideoTrimmerActivity.call(getReactApplicationContext().getCurrentActivity(), videoPath, minLength, maxLength);
+
+								VideoTrimmerActivity.call(getReactApplicationContext().getCurrentActivity(), videoPath, minLength, maxLength, transcode);
 							} else {
 								RNVideoTrimmerModule.this.callback.invoke(RNVideoTrimmerModule.this.createErrorMap(PHOTO_LIBRARY_PERMISSIONS_NOT_GRANTED));
 							}
 						}
 					});
-				}catch (Exception e) {
+				} catch (Exception e) {
 					RNVideoTrimmerModule.this.callback.invoke(RNVideoTrimmerModule.this.createErrorMap(e.getMessage()));
 				}
 			}
@@ -109,20 +137,20 @@ public class RNVideoTrimmerModule extends ReactContextBaseJavaModule implements 
 
 	@Override
 	public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-		if (requestCode == VIDEO_TRIM_REQUEST_CODE ){
-			if(resultCode == RESULT_OK && data != null) {
+		if (requestCode == VIDEO_TRIM_REQUEST_CODE) {
+			if (resultCode == RESULT_OK && data != null) {
 
 				Bundle extra = data.getExtras();
-				String path = extra.getString(VIDEO_PATH_KEY,"");
-				Long startMS = extra.getLong(START_MS_KEY,-1);
-				Long endMs = extra.getLong(END_MS_KEY,-1);
-				if(startMS != -1 && endMs != -1) {
+				String path = extra.getString(VIDEO_PATH_KEY, "");
+				Long startMS = extra.getLong(START_MS_KEY, -1);
+				Long endMs = extra.getLong(END_MS_KEY, -1);
+				if (startMS != -1 && endMs != -1) {
 					JSONObject object = new JSONObject();
 
 					try {
 						object.put("uri", path);
-						object.put("startTime", (double)(startMS/1000f));
-						object.put("endTime", (double)(endMs/1000f));
+						object.put("startTime", (double) (startMS / 1000f));
+						object.put("endTime", (double) (endMs / 1000f));
 						this.callback.invoke(convertJsonToMap(object));
 					} catch (JSONException e) {
 						this.callback.invoke(this.createErrorMap(e.getMessage()));
@@ -144,6 +172,7 @@ public class RNVideoTrimmerModule extends ReactContextBaseJavaModule implements 
 	public void onNewIntent(Intent intent) {
 
 	}
+
 	private static WritableMap convertJsonToMap(JSONObject jsonObject) throws JSONException {
 		WritableMap map = Arguments.createMap();
 
