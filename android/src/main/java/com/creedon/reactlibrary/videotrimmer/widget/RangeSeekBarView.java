@@ -1,5 +1,21 @@
 package com.creedon.reactlibrary.videotrimmer.widget;
-
+/**
+ * _   _ _______   ________ _       _____   __
+ * | \ | |_   _\ \ / /| ___ \ |     / _ \ \ / /
+ * |  \| | | |  \ V / | |_/ / |    / /_\ \ V /
+ * | . ` | | |  /   \ |  __/| |    |  _  |\ /
+ * | |\  |_| |_/ /^\ \| |   | |____| | | || |
+ * \_| \_/\___/\/   \/\_|   \_____/\_| |_/\_/
+ * <p>
+ * modified by jameskong on 12/2/2019.
+ */
+ /**
+ * author : J.Chou
+ * e-mail : who_know_me@163.com
+ * time   : 2019/01/21 6:02 PM
+ * version: 1.0
+ * description:
+ */
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -162,6 +178,7 @@ public class RangeSeekBarView extends View {
 		float bg_middle_right = getWidth() - getPaddingRight();
 		float rangeL = normalizedToScreen(normalizedMinValue)+rangeBarHorizontalPadding;
 		float rangeR = normalizedToScreen(normalizedMaxValue)-rangeBarHorizontalPadding;
+		boolean bOffset = (Math.abs((absoluteMinValuePrim)-(this.mStartPosition)) > 100 || Math.abs((absoluteMaxValuePrim)-(this.mEndPosition)) > 100);
 		Rect leftRect = new Rect((int) bg_middle_left, getHeight() + paddingTop, (int) rangeL, paddingTop);
 		Rect rightRect = new Rect((int) rangeR, getHeight() + paddingTop, (int) bg_middle_right, paddingTop);
 		canvas.drawRect(leftRect, mShadow);
@@ -178,8 +195,8 @@ public class RangeSeekBarView extends View {
 				getHeight(),
 				rectPaint);
 
-		drawThumb(normalizedMinValue, ((normalizedMinValue != 0 || normalizedMaxValue != 1) || isTouchDown), canvas, true);
-		drawThumb(normalizedMaxValue, ((normalizedMinValue != 0 || normalizedMaxValue != 1) || isTouchDown), canvas, false);
+		drawThumb(normalizedMinValue, (bOffset || isTouchDown), canvas, true);
+		drawThumb(normalizedMaxValue, (bOffset || isTouchDown), canvas, false);
 		// customised
 		// drawVideoTrimTimeText(canvas);
 	}
@@ -194,8 +211,8 @@ public class RangeSeekBarView extends View {
 	}
 
 	private void drawVideoTrimTimeText(Canvas canvas) {
-		String leftThumbsTime = DateUtil.convertSecondsToTime(mStartPosition);
-		String rightThumbsTime = DateUtil.convertSecondsToTime(mEndPosition);
+		String leftThumbsTime = DateUtil.convertSecondsToTime(mStartPosition/1000);
+		String rightThumbsTime = DateUtil.convertSecondsToTime(mEndPosition/1000);
 		canvas.drawText(leftThumbsTime, normalizedToScreen(normalizedMinValue), TextPositionY, mVideoTrimTimePaintL);
 		canvas.drawText(rightThumbsTime, normalizedToScreen(normalizedMaxValue), TextPositionY, mVideoTrimTimePaintR);
 	}
@@ -324,12 +341,6 @@ public class RangeSeekBarView extends View {
 			setNormalizedMinValue(screenToNormalized(x, 0));
 		} else if (Thumb.MAX.equals(pressedThumb)) {
 			setNormalizedMaxValue(screenToNormalized(x, 1));
-		}
-
-		if (normalizedMinValue != 0 || normalizedMaxValue != 1) {
-			rectPaint.setColor(orangeColorRes);
-		} else {
-			rectPaint.setColor(blueColorRes);
 		}
 	}
 
@@ -483,8 +494,14 @@ public class RangeSeekBarView extends View {
 	}
 
 	public void setStartEndTime(long start, long end) {
-		this.mStartPosition = start / 1000;
-		this.mEndPosition = end / 1000;
+		this.mStartPosition = start;
+		this.mEndPosition = end;
+		if (Math.abs((absoluteMinValuePrim - start)) > 100 || Math.abs((absoluteMaxValuePrim - end)) > 100) {
+			rectPaint.setColor(orangeColorRes);
+		} else {
+			rectPaint.setColor(blueColorRes);
+		}
+
 	}
 
 	public void setSelectedMinValue(long value) {

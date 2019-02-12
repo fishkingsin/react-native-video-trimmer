@@ -10,6 +10,7 @@ package com.creedon.reactlibrary.videotrimmer.utils;
  * <p>
  * Created by jameskong on 31/1/2019.
  */
+
 import android.annotation.SuppressLint;
 import android.content.ContentUris;
 import android.content.Context;

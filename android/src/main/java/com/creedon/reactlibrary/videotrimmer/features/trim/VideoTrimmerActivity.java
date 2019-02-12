@@ -1,5 +1,21 @@
 package com.creedon.reactlibrary.videotrimmer.features.trim;
-
+/**
+ * _   _ _______   ________ _       _____   __
+ * | \ | |_   _\ \ / /| ___ \ |     / _ \ \ / /
+ * |  \| | | |  \ V / | |_/ / |    / /_\ \ V /
+ * | . ` | | |  /   \ |  __/| |    |  _  |\ /
+ * | |\  |_| |_/ /^\ \| |   | |____| | | || |
+ * \_| \_/\___/\/   \/\_|   \_____/\_| |_/\_/
+ * <p>
+ * modified by jameskong on 12/2/2019.
+ */
+/**
+ * author : J.Chou
+ * e-mail : who_know_me@163.com
+ * time   : 2019/01/21 6:01 PM
+ * version: 1.0
+ * description:
+ */
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -22,18 +38,20 @@ public class VideoTrimmerActivity extends AppCompatActivity implements VideoTrim
 	public static final int VIDEO_TRIM_REQUEST_CODE = 0x001;
 	public static final String MIN_LENGTH = "MIN_LENGTH";
 	public static final String MAX_LENGTH = "MAX_LENGTH";
+	public static final String NEED_TRANSCODE = "NEED_TRANSCODE";
 	public static final String START_MS_KEY = "START_MS_KEY";
 	public static final String END_MS_KEY = "END_MS_KEY";
 	private ActivityTrimmerLayoutBinding mBinding;
 	private ProgressDialog mProgressDialog;
 	private String videoPath;
 
-	public static void call(Activity from, String videoPath, long minLength, long maxLength) {
+	public static void call(Activity from, String videoPath, long minLength, long maxLength, boolean transcode) {
 		if (!TextUtils.isEmpty(videoPath)) {
 			Bundle bundle = new Bundle();
 			bundle.putString(VIDEO_PATH_KEY, videoPath);
 			bundle.putLong(MIN_LENGTH, minLength);
 			bundle.putLong(MAX_LENGTH, maxLength);
+			bundle.putBoolean(NEED_TRANSCODE, transcode);
 			Intent intent = new Intent(from, VideoTrimmerActivity.class);
 			intent.putExtras(bundle);
 			from.startActivityForResult(intent, VIDEO_TRIM_REQUEST_CODE);
@@ -48,10 +66,12 @@ public class VideoTrimmerActivity extends AppCompatActivity implements VideoTrim
 		String path = "";
 		long minLength = -1;
 		long maxLength = -1;
+		boolean bTranscode = false;
 		if (bd != null) {
 			path = bd.getString(VIDEO_PATH_KEY);
 			minLength = bd.getLong(MIN_LENGTH, -1);
 			maxLength = bd.getLong(MAX_LENGTH, -1);
+			bTranscode = bd.getBoolean(NEED_TRANSCODE, false);
 		} else {
 			setResult(RESULT_CANCELED);
 			finish();
@@ -60,7 +80,7 @@ public class VideoTrimmerActivity extends AppCompatActivity implements VideoTrim
 			mBinding.trimmerView.setOnTrimVideoListener(this);
 			videoPath = path;
 			final String realPath = RealPathUtils.getRealPath(this, Uri.parse(path));
-			mBinding.trimmerView.initVideoByURI(Uri.parse(realPath), minLength, maxLength);
+			mBinding.trimmerView.initVideoByURI(Uri.parse(realPath), minLength, maxLength, bTranscode);
 		}
 	}
 
@@ -89,9 +109,9 @@ public class VideoTrimmerActivity extends AppCompatActivity implements VideoTrim
 	@Override
 	public void onFinishTrim(String inputFile, long startMs, long endMs) {
 		Bundle conData = new Bundle();
-		conData.putString(VIDEO_PATH_KEY,videoPath);
-		conData.putLong(START_MS_KEY,startMs);
-		conData.putLong(END_MS_KEY,endMs);
+		conData.putString(VIDEO_PATH_KEY, videoPath);
+		conData.putLong(START_MS_KEY, startMs);
+		conData.putLong(END_MS_KEY, endMs);
 		Intent intent = new Intent();
 		intent.putExtras(conData);
 		setResult(RESULT_OK, intent);
