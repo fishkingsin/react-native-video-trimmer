@@ -12,18 +12,32 @@ buildscript {
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    compileSdkVersion 28
+    buildToolsVersion "23.0.3"
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 22
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
+    }
+	buildTypes {
+        release {
+			proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            multiDexKeepProguard file('multidex-config.pro')
+        }
+		debug {
+			proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            multiDexKeepProguard file('multidex-config.pro')
+        }
     }
     lintOptions {
         abortOnError false
     }
+	dataBinding {
+        enabled = true
+    }
+
 }
 
 repositories {
@@ -32,5 +46,12 @@ repositories {
 
 dependencies {
     compile 'com.facebook.react:react-native:+'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+	implementation 'com.android.support:recyclerview-v7:27.1.1'
+	implementation 'com.github.iknow4:android-utils-sdk:1.1.2'
+	implementation 'nl.bravobit:android-ffmpeg:1.1.5'
+	implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
+	implementation 'io.reactivex.rxjava2:rxjava:2.1.9'
+	implementation 'com.tbruyelle.rxpermissions2:rxpermissions:0.9.5@aar'
+	implementation 'com.github.bumptech.glide:glide:3.7.0'
 }
-  
