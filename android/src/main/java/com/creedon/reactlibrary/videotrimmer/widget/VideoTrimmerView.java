@@ -1,5 +1,21 @@
 package com.creedon.reactlibrary.videotrimmer.widget;
-
+/**
+ * _   _ _______   ________ _       _____   __
+ * | \ | |_   _\ \ / /| ___ \ |     / _ \ \ / /
+ * |  \| | | |  \ V / | |_/ / |    / /_\ \ V /
+ * | . ` | | |  /   \ |  __/| |    |  _  |\ /
+ * | |\  |_| |_/ /^\ \| |   | |____| | | || |
+ * \_| \_/\___/\/   \/\_|   \_____/\_| |_/\_/
+ * <p>
+ * modified by jameskong on 12/2/2019.
+ */
+ /**
+ * author : J.Chou
+ * e-mail : who_know_me@163.com
+ * time   : 2019/01/21 6:02 PM
+ * version: 1.0
+ * description:
+ */
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -46,12 +62,12 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
 	private Context mContext;
 	private RelativeLayout mLinearVideo;
 	private ZVideoView mVideoView;
-//	private ImageView mPlayView;
+	//	private ImageView mPlayView;
 	private RecyclerView mVideoThumbRecyclerView;
 	private RangeSeekBarView mRangeSeekBarView;
 	private LinearLayout mSeekBarLayout;
 	private ImageView mRedProgressIcon;
-//	private TextView mVideoShootTipTv;
+	//	private TextView mVideoShootTipTv;
 	private TextView mVideoDurationTv;
 	private float mAverageMsPx;//每毫秒所占的px
 	private float averagePxMs;//每px所占用的ms毫秒
@@ -73,8 +89,8 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
 	private Handler mAnimationHandler = new Handler();
 	private TextView mVideoRangeTv;
 	private long minLength = -1;
-    private long maxLength = -1;
-    private boolean bTranscode = false;
+	private long maxLength = -1;
+	private boolean bTranscode = false;
 
 	public VideoTrimmerView(Context context, AttributeSet attrs) {
 		this(context, attrs, 0);
@@ -135,17 +151,17 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
 
 
 		mDuration = Math.round(mRightProgressPos - mLeftProgressPos);
-		String leftThumbsTime = DateUtil.convertSecondsToTime(mLeftProgressPos/1000);
-		String rightThumbsTime = DateUtil.convertSecondsToTime(mRightProgressPos/1000);
-		String durationTime =DateUtil.convertSecondsToTime(mDuration/1000);
+		String leftThumbsTime = DateUtil.convertSecondsToTime(mLeftProgressPos / 1000);
+		String rightThumbsTime = DateUtil.convertSecondsToTime(mRightProgressPos / 1000);
+		String durationTime = DateUtil.convertSecondsToTime(mDuration / 1000);
 		mVideoRangeTv.setText(String.format("%s to %s", leftThumbsTime, rightThumbsTime));
 		mVideoDurationTv.setText(durationTime);
 	}
 
 	public void initVideoByURI(final Uri videoURI, final long minLength, final long maxLength, boolean bTranscode) {
 		this.minLength = minLength;
-        this.maxLength = maxLength;
-        this.bTranscode = bTranscode;
+		this.maxLength = maxLength;
+		this.bTranscode = bTranscode;
 		initVideoByURI(videoURI);
 	}
 
@@ -301,8 +317,8 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
 					mSourceUri.getPath(),
 					StorageUtil.getCacheDir(),
 					mLeftProgressPos,
-                    mRightProgressPos,
-                    bTranscode,
+					mRightProgressPos,
+					bTranscode,
 					mOnTrimVideoListener);
 		}
 	}
@@ -355,10 +371,10 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
 					break;
 			}
 
-			String leftThumbsTime = DateUtil.convertSecondsToTime(mLeftProgressPos/1000);
-			String rightThumbsTime = DateUtil.convertSecondsToTime(mRightProgressPos/1000);
+			String leftThumbsTime = DateUtil.convertSecondsToTime(mLeftProgressPos / 1000);
+			String rightThumbsTime = DateUtil.convertSecondsToTime(mRightProgressPos / 1000);
 			mDuration = Math.round(mRightProgressPos - mLeftProgressPos);
-			String durationTime =DateUtil.convertSecondsToTime(mDuration/1000);
+			String durationTime = DateUtil.convertSecondsToTime(mDuration / 1000);
 			Log.d(TAG, "-----leftThumbsTime----->>>>>>" + leftThumbsTime);
 			Log.d(TAG, "-----rightThumbsTime----->>>>>>" + rightThumbsTime);
 			Log.d(TAG, "-----durationTime----->>>>>>" + durationTime);
@@ -411,8 +427,8 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
 		seekTo(mLeftProgressPos);
 		mRangeSeekBarView.setStartEndTime(mLeftProgressPos, mRightProgressPos);
 		mRangeSeekBarView.invalidate();
-		String leftThumbsTime = DateUtil.convertSecondsToTime(mLeftProgressPos/1000);
-		String rightThumbsTime = DateUtil.convertSecondsToTime(mRightProgressPos/1000);
+		String leftThumbsTime = DateUtil.convertSecondsToTime(mLeftProgressPos / 1000);
+		String rightThumbsTime = DateUtil.convertSecondsToTime(mRightProgressPos / 1000);
 		mVideoRangeTv.setText(String.format("%s to %s", leftThumbsTime, rightThumbsTime));
 	}
 
@@ -488,13 +504,13 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
 	public void onDestroy() {
 		BackgroundExecutor.cancelAll("", true);
 		UiThreadExecutor.cancelAll("");
-    }
+	}
 
-    long getMinVideoDuration() {
-        return this.minLength > 0 ? minLength : VideoTrimmerUtil.MIN_SHOOT_DURATION;
-    }
+	long getMinVideoDuration() {
+		return this.minLength > 0 ? minLength : VideoTrimmerUtil.MIN_SHOOT_DURATION;
+	}
 
-    long getVideoMaxDuration() {
-        return this.maxLength > 0 ? maxLength : VideoTrimmerUtil.MAX_SHOOT_DURATION;
-    }
+	long getVideoMaxDuration() {
+		return this.maxLength > 0 ? maxLength : VideoTrimmerUtil.MAX_SHOOT_DURATION;
+	}
 }

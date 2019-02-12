@@ -1,6 +1,15 @@
 
 package com.creedon.reactlibrary.videotrimmer;
-
+/**
+ * _   _ _______   ________ _       _____   __
+ * | \ | |_   _\ \ / /| ___ \ |     / _ \ \ / /
+ * |  \| | | |  \ V / | |_/ / |    / /_\ \ V /
+ * | . ` | | |  /   \ |  __/| |    |  _  |\ /
+ * | |\  |_| |_/ /^\ \| |   | |____| | | || |
+ * \_| \_/\___/\/   \/\_|   \_____/\_| |_/\_/
+ * <p>
+ * created by jameskong on 32/1/2019.
+ */
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;

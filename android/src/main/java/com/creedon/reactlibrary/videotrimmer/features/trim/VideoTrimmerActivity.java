@@ -1,5 +1,21 @@
 package com.creedon.reactlibrary.videotrimmer.features.trim;
-
+/**
+ * _   _ _______   ________ _       _____   __
+ * | \ | |_   _\ \ / /| ___ \ |     / _ \ \ / /
+ * |  \| | | |  \ V / | |_/ / |    / /_\ \ V /
+ * | . ` | | |  /   \ |  __/| |    |  _  |\ /
+ * | |\  |_| |_/ /^\ \| |   | |____| | | || |
+ * \_| \_/\___/\/   \/\_|   \_____/\_| |_/\_/
+ * <p>
+ * modified by jameskong on 12/2/2019.
+ */
+/**
+ * author : J.Chou
+ * e-mail : who_know_me@163.com
+ * time   : 2019/01/21 6:01 PM
+ * version: 1.0
+ * description:
+ */
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -93,9 +109,9 @@ public class VideoTrimmerActivity extends AppCompatActivity implements VideoTrim
 	@Override
 	public void onFinishTrim(String inputFile, long startMs, long endMs) {
 		Bundle conData = new Bundle();
-		conData.putString(VIDEO_PATH_KEY,videoPath);
-		conData.putLong(START_MS_KEY,startMs);
-		conData.putLong(END_MS_KEY,endMs);
+		conData.putString(VIDEO_PATH_KEY, videoPath);
+		conData.putLong(START_MS_KEY, startMs);
+		conData.putLong(END_MS_KEY, endMs);
 		Intent intent = new Intent();
 		intent.putExtras(conData);
 		setResult(RESULT_OK, intent);
