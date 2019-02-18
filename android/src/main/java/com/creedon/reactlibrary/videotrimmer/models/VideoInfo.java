@@ -7,145 +7,155 @@ import android.net.Uri;
 
 import java.io.File;
 import java.io.Serializable;
-
+/**
+ * _   _ _______   ________ _       _____   __
+ * | \ | |_   _\ \ / /| ___ \ |     / _ \ \ / /
+ * |  \| | | |  \ V / | |_/ / |    / /_\ \ V /
+ * | . ` | | |  /   \ |  __/| |    |  _  |\ /
+ * | |\  |_| |_/ /^\ \| |   | |____| | | || |
+ * \_| \_/\___/\/   \/\_|   \_____/\_| |_/\_/
+ * <p>
+ * modified by jameskong on 12/2/2019.
+ */
 /**
  * Author：J.Chou
  * Date：  2016.08.01 3:28 PM
  * Email： who_know_me@163.com
  * Describe:
  */
+
 public class VideoInfo implements Serializable, Cloneable {
 
-    private long videoId;
+	private long videoId;
 
-    private String videoName = "";
+	private String videoName = "";
 
-    private String authorName = "";
+	private String authorName = "";
 
-    private String description = "";
+	private String description = "";
 
-    //视频全路径,包含视频文件名的路径信息
-    private String videoPath;
+	//视频全路径,包含视频文件名的路径信息
+	private String videoPath;
 
-    //视频所在文件夹的路径
-    private String videoFolderPath;
+	//视频所在文件夹的路径
+	private String videoFolderPath;
 
-    private String createTime;
+	private String createTime;
 
-    private long duration = 0;
+	private long duration = 0;
 
-    private String thumbPath;
+	private String thumbPath;
 
-    private int rotate;
+	private int rotate;
 
-    private String lat;
+	private String lat;
 
-    private String lon;
+	private String lon;
 
-    public long getVideoId() {
-        return videoId;
-    }
+	public long getVideoId() {
+		return videoId;
+	}
 
-    public void setVideoId(long videoId) {
-        this.videoId = videoId;
-    }
+	public void setVideoId(long videoId) {
+		this.videoId = videoId;
+	}
 
-    public String getVideoName() {
-        return videoName;
-    }
+	public String getVideoName() {
+		return videoName;
+	}
 
-    public void setVideoName(String videoName) {
-        this.videoName = videoName;
-    }
+	public void setVideoName(String videoName) {
+		this.videoName = videoName;
+	}
 
-    public String getAuthorName() {
-        return authorName;
-    }
+	public String getAuthorName() {
+		return authorName;
+	}
 
-    public void setAuthorName(String authorName) {
-        this.authorName = authorName;
-    }
+	public void setAuthorName(String authorName) {
+		this.authorName = authorName;
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-    public String getVideoPath() {
-        return videoPath;
-    }
+	public String getVideoPath() {
+		return videoPath;
+	}
 
-    public int getRotate() {
-        return rotate;
-    }
+	public int getRotate() {
+		return rotate;
+	}
 
-    public void setRotate(int rotate) {
-        this.rotate = rotate;
-    }
+	public void setRotate(int rotate) {
+		this.rotate = rotate;
+	}
 
-    public String getThumbPath() {
-        return thumbPath;
-    }
+	public String getThumbPath() {
+		return thumbPath;
+	}
 
-    public void setThumbPath(String thumbPath) {
-        this.thumbPath = thumbPath;
-    }
+	public void setThumbPath(String thumbPath) {
+		this.thumbPath = thumbPath;
+	}
 
-    public void setVideoPath(String videoPath) {
-        this.videoPath = videoPath;
-    }
+	public void setVideoPath(String videoPath) {
+		this.videoPath = videoPath;
+	}
 
-    public String getVideoFolderPath() {
-        return videoFolderPath;
-    }
+	public String getVideoFolderPath() {
+		return videoFolderPath;
+	}
 
-    public void setVideoFolderPath(String videoFolderPath) {
-        this.videoFolderPath = videoFolderPath;
-    }
+	public void setVideoFolderPath(String videoFolderPath) {
+		this.videoFolderPath = videoFolderPath;
+	}
 
-    public String getCreateTime() {
-        return createTime;
-    }
+	public String getCreateTime() {
+		return createTime;
+	}
 
-    public void setCreateTime(String createTime) {
-        this.createTime = createTime;
-    }
+	public void setCreateTime(String createTime) {
+		this.createTime = createTime;
+	}
 
-    public long getDuration() {
-        return duration;
-    }
+	public long getDuration() {
+		return duration;
+	}
 
-    public void setDuration(long duration) {
-        this.duration = duration;
-    }
+	public void setDuration(long duration) {
+		this.duration = duration;
+	}
 
-    public static VideoInfo buildVideo(Context context, String videoPath) {
-        VideoInfo info = new VideoInfo();
-        info.setVideoPath(videoPath);
-        try {
-            MediaPlayer mp = MediaPlayer.create(context, Uri.fromFile(new File(videoPath)));
-            if (mp != null) {
-                info.setDuration(mp.getDuration());
-                mp.release();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return info;
-    }
+	public static VideoInfo buildVideo(Context context, String videoPath) {
+		VideoInfo info = new VideoInfo();
+		info.setVideoPath(videoPath);
+		try {
+			MediaPlayer mp = MediaPlayer.create(context, Uri.fromFile(new File(videoPath)));
+			if (mp != null) {
+				info.setDuration(mp.getDuration());
+				mp.release();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return info;
+	}
 
-    public VideoInfo calcDuration() {
-        MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
-        try {
-            mediaMetadataRetriever.setDataSource(getVideoPath());
-            String time = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-            duration = Long.parseLong(time);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return this;
-    }
+	public VideoInfo calcDuration() {
+		MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
+		try {
+			mediaMetadataRetriever.setDataSource(getVideoPath());
+			String time = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+			duration = Long.parseLong(time);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return this;
+	}
 }

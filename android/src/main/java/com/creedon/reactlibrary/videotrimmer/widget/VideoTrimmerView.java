@@ -1,5 +1,21 @@
 package com.creedon.reactlibrary.videotrimmer.widget;
-
+/**
+ * _   _ _______   ________ _       _____   __
+ * | \ | |_   _\ \ / /| ___ \ |     / _ \ \ / /
+ * |  \| | | |  \ V / | |_/ / |    / /_\ \ V /
+ * | . ` | | |  /   \ |  __/| |    |  _  |\ /
+ * | |\  |_| |_/ /^\ \| |   | |____| | | || |
+ * \_| \_/\___/\/   \/\_|   \_____/\_| |_/\_/
+ * <p>
+ * modified by jameskong on 12/2/2019.
+ */
+ /**
+ * author : J.Chou
+ * e-mail : who_know_me@163.com
+ * time   : 2019/01/21 6:02 PM
+ * version: 1.0
+ * description:
+ */
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -46,12 +62,12 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
 	private Context mContext;
 	private RelativeLayout mLinearVideo;
 	private ZVideoView mVideoView;
-//	private ImageView mPlayView;
+	//	private ImageView mPlayView;
 	private RecyclerView mVideoThumbRecyclerView;
 	private RangeSeekBarView mRangeSeekBarView;
 	private LinearLayout mSeekBarLayout;
 	private ImageView mRedProgressIcon;
-//	private TextView mVideoShootTipTv;
+	//	private TextView mVideoShootTipTv;
 	private TextView mVideoDurationTv;
 	private float mAverageMsPx;//每毫秒所占的px
 	private float averagePxMs;//每px所占用的ms毫秒
@@ -71,11 +87,10 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
 	private int mThumbsTotalCount;
 	private ValueAnimator mRedProgressAnimator;
 	private Handler mAnimationHandler = new Handler();
-	private long startMs = -1;
-	private long endMs = -1;
 	private TextView mVideoRangeTv;
-	private long minLenght;
-	private long maxLength;
+	private long minLength = -1;
+	private long maxLength = -1;
+	private boolean bTranscode = false;
 
 	public VideoTrimmerView(Context context, AttributeSet attrs) {
 		this(context, attrs, 0);
@@ -106,25 +121,27 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
 		setUpListeners();
 	}
 
-	private void initRangeSeekBarView(long startMs, long endMs) {
+	private void initRangeSeekBarView(long minLength, long maxLength) {
+		this.minLength = minLength;
+		this.maxLength = maxLength;
 		if (mRangeSeekBarView != null) return;
 		int rangeWidth;
 		mLeftProgressPos = 0;
-		if (mDuration <= VideoTrimmerUtil.MAX_SHOOT_DURATION) {
+		if (mDuration <= getVideoMaxDuration()) {
 			mThumbsTotalCount = VideoTrimmerUtil.MAX_COUNT_RANGE;
 			rangeWidth = mMaxWidth;
 			mRightProgressPos = mDuration;
 		} else {
-			mThumbsTotalCount = (int) (mDuration * 1.0f / (VideoTrimmerUtil.MAX_SHOOT_DURATION * 1.0f) * VideoTrimmerUtil.MAX_COUNT_RANGE);
+			mThumbsTotalCount = (int) (mDuration * 1.0f / (getVideoMaxDuration() * 1.0f) * VideoTrimmerUtil.MAX_COUNT_RANGE);
 			rangeWidth = mMaxWidth / VideoTrimmerUtil.MAX_COUNT_RANGE * mThumbsTotalCount;
-			mRightProgressPos = VideoTrimmerUtil.MAX_SHOOT_DURATION;
+			mRightProgressPos = getVideoMaxDuration();
 		}
 		mVideoThumbRecyclerView.addItemDecoration(new SpacesItemDecoration2(VideoTrimmerUtil.RECYCLER_VIEW_PADDING, mThumbsTotalCount));
 		mRangeSeekBarView = new RangeSeekBarView(mContext, mLeftProgressPos, mRightProgressPos);
 		mRangeSeekBarView.setSelectedMinValue(mLeftProgressPos);
 		mRangeSeekBarView.setSelectedMaxValue(mRightProgressPos);
 		mRangeSeekBarView.setStartEndTime(mLeftProgressPos, mRightProgressPos);
-		mRangeSeekBarView.setMinShootTime(VideoTrimmerUtil.MIN_SHOOT_DURATION);
+		mRangeSeekBarView.setMinShootTime(getMinVideoDuration());
 		mRangeSeekBarView.setNotifyWhileDragging(true);
 		mRangeSeekBarView.setOnRangeSeekBarChangeListener(mOnRangeSeekBarChangeListener);
 		mSeekBarLayout.addView(mRangeSeekBarView);
@@ -134,27 +151,31 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
 
 
 		mDuration = Math.round(mRightProgressPos - mLeftProgressPos);
-		String leftThumbsTime = DateUtil.convertSecondsToTime(mLeftProgressPos/1000);
-		String rightThumbsTime = DateUtil.convertSecondsToTime(mRightProgressPos/1000);
-		String durationTime =DateUtil.convertSecondsToTime(mDuration/1000);
+		String leftThumbsTime = DateUtil.convertSecondsToTime(mLeftProgressPos / 1000);
+		String rightThumbsTime = DateUtil.convertSecondsToTime(mRightProgressPos / 1000);
+		String durationTime = DateUtil.convertSecondsToTime(mDuration / 1000);
 		mVideoRangeTv.setText(String.format("%s to %s", leftThumbsTime, rightThumbsTime));
 		mVideoDurationTv.setText(durationTime);
 	}
 
-	public void initVideoByURI(final Uri videoURI, final long minLenght, final long maxLength) {
-		this.minLenght = minLenght;
+	public void initVideoByURI(final Uri videoURI, final long minLength, final long maxLength, boolean bTranscode) {
+		this.minLength = minLength;
 		this.maxLength = maxLength;
-//		this.startMs = startMs;
-//		this.endMs = endMs;
+		this.bTranscode = bTranscode;
 		initVideoByURI(videoURI);
 	}
 
+	@SuppressLint("DefaultLocale")
 	public void initVideoByURI(final Uri videoURI) {
 		mSourceUri = videoURI;
 		mVideoView.setVideoURI(videoURI);
 		mVideoView.requestFocus();
 //		mVideoShootTipTv.setText(String.format(mContext.getResources().getString(R.string.video_shoot_tip), VideoTrimmerUtil.VIDEO_MAX_TIME));
-		mVideoDurationTv.setText(String.format("%d", VideoTrimmerUtil.VIDEO_MAX_TIME));
+		mVideoDurationTv.setText(String.format("%d", getVideoMaxTime()));
+	}
+
+	private int getVideoMaxTime() {
+		return this.maxLength > 0 ? (int) (maxLength / 1000) : VideoTrimmerUtil.VIDEO_MAX_TIME;
 	}
 
 	private void startShootVideoThumbs(final Context context, final Uri videoUri, int totalThumbsCount, long startPosition, long endPosition) {
@@ -203,7 +224,7 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
 			setRestoreState(false);
 			seekTo((int) mRedProgressBarPos);
 		}
-		initRangeSeekBarView(startMs, endMs);
+		initRangeSeekBarView(this.minLength, this.maxLength);
 
 		startShootVideoThumbs(mContext, mSourceUri, mThumbsTotalCount, 0, mDuration);
 
@@ -288,7 +309,7 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
 	}
 
 	private void onSaveClicked() {
-		if (mRightProgressPos - mLeftProgressPos < VideoTrimmerUtil.MIN_SHOOT_DURATION) {
+		if (mRightProgressPos - mLeftProgressPos < getMinVideoDuration()) {
 			Toast.makeText(mContext, "Video too short", Toast.LENGTH_SHORT).show();
 		} else {
 			mVideoView.pause();
@@ -297,6 +318,7 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
 					StorageUtil.getCacheDir(),
 					mLeftProgressPos,
 					mRightProgressPos,
+					bTranscode,
 					mOnTrimVideoListener);
 		}
 	}
@@ -349,10 +371,10 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
 					break;
 			}
 
-			String leftThumbsTime = DateUtil.convertSecondsToTime(mLeftProgressPos/1000);
-			String rightThumbsTime = DateUtil.convertSecondsToTime(mRightProgressPos/1000);
+			String leftThumbsTime = DateUtil.convertSecondsToTime(mLeftProgressPos / 1000);
+			String rightThumbsTime = DateUtil.convertSecondsToTime(mRightProgressPos / 1000);
 			mDuration = Math.round(mRightProgressPos - mLeftProgressPos);
-			String durationTime =DateUtil.convertSecondsToTime(mDuration/1000);
+			String durationTime = DateUtil.convertSecondsToTime(mDuration / 1000);
 			Log.d(TAG, "-----leftThumbsTime----->>>>>>" + leftThumbsTime);
 			Log.d(TAG, "-----rightThumbsTime----->>>>>>" + rightThumbsTime);
 			Log.d(TAG, "-----durationTime----->>>>>>" + durationTime);
@@ -383,32 +405,32 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
 			//初始状态,why ? 因为默认的时候有35dp的空白！
 			if (scrollX == -VideoTrimmerUtil.RECYCLER_VIEW_PADDING) {
 				scrollPos = 0;
+				updateUI(scrollPos);
 			} else {
 				isSeeking = true;
 				scrollPos = (long) (mAverageMsPx * (VideoTrimmerUtil.RECYCLER_VIEW_PADDING + scrollX));
-				mLeftProgressPos = mRangeSeekBarView.getSelectedMinValue() + scrollPos;
-				mRightProgressPos = mRangeSeekBarView.getSelectedMaxValue() + scrollPos;
-				Log.d(TAG, "onScrolled >>>> mLeftProgressPos = " + mLeftProgressPos);
-				Log.d(TAG, "onScrolled >>>> mRightProgressPos = " + mRightProgressPos);
-				mRedProgressBarPos = mLeftProgressPos;
-				if (mVideoView.isPlaying()) {
-					mVideoView.pause();
-					setPlayPauseViewIcon(false);
-				}
-				mRedProgressIcon.setVisibility(GONE);
-				seekTo(mLeftProgressPos);
-				mRangeSeekBarView.setStartEndTime(mLeftProgressPos, mRightProgressPos);
-                mRangeSeekBarView.invalidate();
-
-
-                String leftThumbsTime = DateUtil.convertSecondsToTime(mLeftProgressPos/1000);
-                String rightThumbsTime = DateUtil.convertSecondsToTime(mRightProgressPos/1000);
-                mVideoRangeTv.setText(String.format("%s to %s", leftThumbsTime, rightThumbsTime));
-                mRangeSeekBarView.setStartEndTime(mLeftProgressPos, mRightProgressPos);
+				updateUI(scrollPos);
 			}
 			lastScrollX = scrollX;
 		}
 	};
+
+	private void updateUI(long scrollPos) {
+		mLeftProgressPos = mRangeSeekBarView.getSelectedMinValue() + scrollPos;
+		mRightProgressPos = mRangeSeekBarView.getSelectedMaxValue() + scrollPos;
+		mRedProgressBarPos = mLeftProgressPos;
+		if (mVideoView.isPlaying()) {
+			mVideoView.pause();
+			setPlayPauseViewIcon(false);
+		}
+		mRedProgressIcon.setVisibility(GONE);
+		seekTo(mLeftProgressPos);
+		mRangeSeekBarView.setStartEndTime(mLeftProgressPos, mRightProgressPos);
+		mRangeSeekBarView.invalidate();
+		String leftThumbsTime = DateUtil.convertSecondsToTime(mLeftProgressPos / 1000);
+		String rightThumbsTime = DateUtil.convertSecondsToTime(mRightProgressPos / 1000);
+		mVideoRangeTv.setText(String.format("%s to %s", leftThumbsTime, rightThumbsTime));
+	}
 
 	/**
 	 * 水平滑动了多少px
@@ -482,5 +504,13 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
 	public void onDestroy() {
 		BackgroundExecutor.cancelAll("", true);
 		UiThreadExecutor.cancelAll("");
+	}
+
+	long getMinVideoDuration() {
+		return this.minLength > 0 ? minLength : VideoTrimmerUtil.MIN_SHOOT_DURATION;
+	}
+
+	long getVideoMaxDuration() {
+		return this.maxLength > 0 ? maxLength : VideoTrimmerUtil.MAX_SHOOT_DURATION;
 	}
 }
