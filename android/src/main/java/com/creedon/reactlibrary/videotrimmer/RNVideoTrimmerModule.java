@@ -19,6 +19,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.crashlytics.android.Crashlytics;
 import com.creedon.reactlibrary.videotrimmer.features.trim.VideoTrimmerActivity;
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Arguments;
@@ -127,6 +128,7 @@ public class RNVideoTrimmerModule extends ReactContextBaseJavaModule implements 
 						}
 					});
 				} catch (Exception e) {
+					Crashlytics.logException(e);
 					RNVideoTrimmerModule.this.callback.invoke(RNVideoTrimmerModule.this.createErrorMap(e.getMessage()));
 				}
 			}
@@ -166,6 +168,7 @@ public class RNVideoTrimmerModule extends ReactContextBaseJavaModule implements 
 						}
 						this.callback = null;
 					} catch (JSONException e) {
+						Crashlytics.logException(e);
 						if (this.callback != null) {
 							this.callback.invoke(this.createErrorMap(e.getMessage()));
 						}
