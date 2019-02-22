@@ -10,6 +10,7 @@ package com.creedon.reactlibrary.videotrimmer;
  * <p>
  * created by jameskong on 32/1/2019.
  */
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -160,13 +161,22 @@ public class RNVideoTrimmerModule extends ReactContextBaseJavaModule implements 
 						object.put("uri", path);
 						object.put("startTime", (double) (startMS / 1000f));
 						object.put("endTime", (double) (endMs / 1000f));
-						this.callback.invoke(convertJsonToMap(object));
+						if (this.callback != null) {
+							this.callback.invoke(convertJsonToMap(object));
+						}
+						this.callback = null;
 					} catch (JSONException e) {
-						this.callback.invoke(this.createErrorMap(e.getMessage()));
+						if (this.callback != null) {
+							this.callback.invoke(this.createErrorMap(e.getMessage()));
+						}
+						this.callback = null;
 					}
 				}
 			} else {
-				this.callback.invoke(this.createErrorMap(NO_RESULT_ERROR));
+				if (this.callback != null) {
+					this.callback.invoke(this.createErrorMap(NO_RESULT_ERROR));
+				}
+				this.callback = null;
 			}
 		}
 	}
