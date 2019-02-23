@@ -45,7 +45,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.facebook.react:react-native:+'
+    implementation 'com.facebook.react:react-native:+'
     implementation 'com.android.support:appcompat-v7:27.1.1'
 	implementation 'com.android.support:recyclerview-v7:27.1.1'
 	implementation 'com.github.iknow4:android-utils-sdk:1.1.2'
@@ -54,4 +54,7 @@ dependencies {
 	implementation 'io.reactivex.rxjava2:rxjava:2.1.9'
 	implementation 'com.tbruyelle.rxpermissions2:rxpermissions:0.9.5@aar'
 	implementation 'com.github.bumptech.glide:glide:3.7.0'
+    implementation('com.crashlytics.sdk.android:crashlytics:2.8.0@aar') {
+        transitive = true;
+    }
 }

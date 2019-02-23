@@ -463,7 +463,7 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
 			public void onAnimationUpdate(ValueAnimator animation) {
 				params.leftMargin = (int) animation.getAnimatedValue();
 				mRedProgressIcon.setLayoutParams(params);
-				Log.d(TAG, "----onAnimationUpdate--->>>>>>>" + mRedProgressBarPos);
+//				Log.d(TAG, "----onAnimationUpdate--->>>>>>>" + mRedProgressBarPos);
 			}
 		});
 		mRedProgressAnimator.start();
@@ -487,7 +487,7 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
 
 	private void updateVideoProgress() {
 		long currentPosition = mVideoView.getCurrentPosition();
-		Log.d(TAG, "updateVideoProgress currentPosition = " + currentPosition);
+//		Log.d(TAG, "updateVideoProgress currentPosition = " + currentPosition);
 		if (currentPosition >= (mRightProgressPos)) {
 			mRedProgressBarPos = mLeftProgressPos;
 			pauseRedProgressAnimation();
