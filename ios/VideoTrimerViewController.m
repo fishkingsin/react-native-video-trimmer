@@ -117,6 +117,7 @@
             }
 
 			dispatch_async(dispatch_get_main_queue(), ^{
+				[self.progressBar setHidden:YES];
                 AVPlayerItem *item = [AVPlayerItem playerItemWithAsset:self.asset];
 				self.player = [AVPlayer playerWithPlayerItem:item];
                 [self.player addObserver:self forKeyPath:@"status" options:0 context:nil];
