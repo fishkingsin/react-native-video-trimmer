@@ -3,6 +3,7 @@
     <color name="nixplay_primary">#FFFFFF</color>
     <color name="nixplay_primary_dark">#62b1e6</color>
     <color name="nixplay_element_color">#62b1e6</color>
+    <color name="nixplay_element_disabled_color">#8c8c8c</color>
 	<color name="nixplay_orange_color">#F0AD4E</color>
     <color name="nixplay_album_popup_bg">#FFFFFF</color>
     <color name="nixplay_album_dropdown_title_text">#111111</color>

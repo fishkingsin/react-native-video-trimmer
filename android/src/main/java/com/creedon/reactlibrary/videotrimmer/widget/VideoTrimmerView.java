@@ -91,6 +91,10 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
 	private long minLength = -1;
 	private long maxLength = -1;
 	private boolean bTranscode = false;
+	private TextView finishBtn;
+	private long mOrigLeftProgressPos;
+	private long mOrigRightProgressPos;
+	private int mOrigDuration;
 
 	public VideoTrimmerView(Context context, AttributeSet attrs) {
 		this(context, attrs, 0);
@@ -126,15 +130,15 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
 		this.maxLength = maxLength;
 		if (mRangeSeekBarView != null) return;
 		int rangeWidth;
-		mLeftProgressPos = 0;
+		mOrigLeftProgressPos = mLeftProgressPos = 0;
 		if (mDuration <= getVideoMaxDuration()) {
 			mThumbsTotalCount = VideoTrimmerUtil.MAX_COUNT_RANGE;
 			rangeWidth = mMaxWidth;
-			mRightProgressPos = mDuration;
+			mOrigRightProgressPos = mRightProgressPos = mDuration;
 		} else {
 			mThumbsTotalCount = (int) (mDuration * 1.0f / (getVideoMaxDuration() * 1.0f) * VideoTrimmerUtil.MAX_COUNT_RANGE);
 			rangeWidth = mMaxWidth / VideoTrimmerUtil.MAX_COUNT_RANGE * mThumbsTotalCount;
-			mRightProgressPos = getVideoMaxDuration();
+			mOrigRightProgressPos = mRightProgressPos = getVideoMaxDuration();
 		}
 		mVideoThumbRecyclerView.addItemDecoration(new SpacesItemDecoration2(VideoTrimmerUtil.RECYCLER_VIEW_PADDING, mThumbsTotalCount));
 		mRangeSeekBarView = new RangeSeekBarView(mContext, mLeftProgressPos, mRightProgressPos);
@@ -150,7 +154,7 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
 		averagePxMs = (mMaxWidth * 1.0f / (mRightProgressPos - mLeftProgressPos));
 
 
-		mDuration = Math.round(mRightProgressPos - mLeftProgressPos);
+		mOrigDuration = mDuration = Math.round(mRightProgressPos - mLeftProgressPos);
 		String leftThumbsTime = DateUtil.convertSecondsToTime(mLeftProgressPos / 1000);
 		String rightThumbsTime = DateUtil.convertSecondsToTime(mRightProgressPos / 1000);
 		String durationTime = DateUtil.convertSecondsToTime(mDuration / 1000);
@@ -274,7 +278,8 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
 			}
 		});
 
-		findViewById(R.id.finishBtn).setOnClickListener(new OnClickListener() {
+		finishBtn = findViewById(R.id.finishBtn);
+		finishBtn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				onSaveClicked();
@@ -381,6 +386,11 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
 			mVideoRangeTv.setText(String.format("%s to %s", leftThumbsTime, rightThumbsTime));
 			mVideoDurationTv.setText(durationTime);
 			mRangeSeekBarView.setStartEndTime(mLeftProgressPos, mRightProgressPos);
+			if(Math.abs(mOrigLeftProgressPos-mLeftProgressPos) < 100  && Math.abs(mOrigRightProgressPos-mRightProgressPos) < 100 ) {
+				finishBtn.setEnabled(false);
+			} else {
+				finishBtn.setEnabled(true);
+			}
 		}
 	};
 
@@ -430,6 +440,12 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
 		String leftThumbsTime = DateUtil.convertSecondsToTime(mLeftProgressPos / 1000);
 		String rightThumbsTime = DateUtil.convertSecondsToTime(mRightProgressPos / 1000);
 		mVideoRangeTv.setText(String.format("%s to %s", leftThumbsTime, rightThumbsTime));
+
+		if(Math.abs(mOrigLeftProgressPos-mLeftProgressPos) < 100  && Math.abs(mOrigRightProgressPos-mRightProgressPos) < 100 ) {
+			finishBtn.setEnabled(false);
+		} else {
+			finishBtn.setEnabled(true);
+		}
 	}
 
 	/**
