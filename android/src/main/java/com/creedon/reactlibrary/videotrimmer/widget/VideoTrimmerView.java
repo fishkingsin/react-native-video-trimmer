@@ -155,9 +155,9 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
 
 
 		mOrigDuration = mDuration = Math.round(mRightProgressPos - mLeftProgressPos);
-		String leftThumbsTime = DateUtil.convertSecondsToTime(mLeftProgressPos / 1000);
-		String rightThumbsTime = DateUtil.convertSecondsToTime(mRightProgressPos / 1000);
-		String durationTime = DateUtil.convertSecondsToTime(mDuration / 1000);
+		String leftThumbsTime = DateUtil.convertSecondsToTime((long) Math.round(mLeftProgressPos / 1000.0f));
+		String rightThumbsTime = DateUtil.convertSecondsToTime((long) Math.round(mRightProgressPos / 1000.0f));
+		String durationTime = DateUtil.convertSecondsToTime((long) Math.round(mDuration / 1000.0f));
 		mVideoRangeTv.setText(String.format("%s to %s", leftThumbsTime, rightThumbsTime));
 		mVideoDurationTv.setText(durationTime);
 	}
@@ -376,10 +376,10 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
 					break;
 			}
 
-			String leftThumbsTime = DateUtil.convertSecondsToTime(mLeftProgressPos / 1000);
-			String rightThumbsTime = DateUtil.convertSecondsToTime(mRightProgressPos / 1000);
+			String leftThumbsTime = DateUtil.convertSecondsToTime((long) Math.round(mLeftProgressPos / 1000.0f));
+			String rightThumbsTime = DateUtil.convertSecondsToTime((long) Math.round(mRightProgressPos / 1000.0f));
 			mDuration = Math.round(mRightProgressPos - mLeftProgressPos);
-			String durationTime = DateUtil.convertSecondsToTime(mDuration / 1000);
+			String durationTime = DateUtil.convertSecondsToTime((long) Math.round(mDuration / 1000.0f));
 			Log.d(TAG, "-----leftThumbsTime----->>>>>>" + leftThumbsTime);
 			Log.d(TAG, "-----rightThumbsTime----->>>>>>" + rightThumbsTime);
 			Log.d(TAG, "-----durationTime----->>>>>>" + durationTime);
@@ -437,8 +437,8 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
 		seekTo(mLeftProgressPos);
 		mRangeSeekBarView.setStartEndTime(mLeftProgressPos, mRightProgressPos);
 		mRangeSeekBarView.invalidate();
-		String leftThumbsTime = DateUtil.convertSecondsToTime(mLeftProgressPos / 1000);
-		String rightThumbsTime = DateUtil.convertSecondsToTime(mRightProgressPos / 1000);
+		String leftThumbsTime = DateUtil.convertSecondsToTime((long) Math.round(mLeftProgressPos / 1000.0f));
+		String rightThumbsTime = DateUtil.convertSecondsToTime((long) Math.round(mRightProgressPos / 1000.0f));
 		mVideoRangeTv.setText(String.format("%s to %s", leftThumbsTime, rightThumbsTime));
 
 		if(Math.abs(mOrigLeftProgressPos-mLeftProgressPos) < 100  && Math.abs(mOrigRightProgressPos-mRightProgressPos) < 100 ) {
