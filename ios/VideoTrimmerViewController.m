@@ -1,13 +1,13 @@
 
 //
-//  VideoTrimerViewController.m
+//  VideoTrimmerViewController.m
 //  RNVideoTrimmer
 //
 //  Created by James Kong on 11/9/2018.
 //  Copyright © 2018 Creedon Technologies. All rights reserved.
 //
 
-#import "VideoTrimerViewController.h"
+#import "VideoTrimmerViewController.h"
 #import "ICGVideoTrimmerView.h"
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <AVFoundation/AVFoundation.h>
@@ -15,7 +15,7 @@
 #define EDITED_THEME [UIColor colorWithRed:0.94 green:0.68 blue:0.31 alpha:1.0]
 #define DEFAULT_LENGTH 15
 @import Photos;
-@interface VideoTrimerViewController () <ICGVideoTrimmerDelegate>
+@interface VideoTrimmerViewController () <ICGVideoTrimmerDelegate>
 
 @property (assign, nonatomic) BOOL isPlaying;
 @property (strong, nonatomic) AVPlayer *player;
@@ -42,7 +42,7 @@
 @property (assign, nonatomic) BOOL restartOnPlay;
 @end
 
-@implementation VideoTrimerViewController
+@implementation VideoTrimmerViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -79,10 +79,10 @@
     results = [PHAsset fetchAssetsWithLocalIdentifiers:@[localIdentifier] options:nil];
     if (results.count == 0) {
         NSString *errorText = [NSString stringWithFormat:@"Failed to fetch PHAsset with local identifier %@ with no error message.", localIdentifier];
-        if([self.delegate respondsToSelector:@selector(videoTrimerViewController:didFailedWithError:)])
+        if([self.delegate respondsToSelector:@selector(VideoTrimmerViewController:didFailedWithError:)])
         {
             NSError *error = [NSError errorWithDomain:NSURLErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey : errorText}];
-            [self.delegate videoTrimerViewController:self didFailedWithError:error];
+            [self.delegate VideoTrimmerViewController:self didFailedWithError:error];
         }
     }
 
@@ -91,9 +91,9 @@
     [self.progressBar setHidden:YES];
     options.progressHandler = ^(double progress, NSError * _Nullable error, BOOL * _Nonnull stop, NSDictionary * _Nullable info) {
         if(error) {
-            if([self.delegate respondsToSelector:@selector(videoTrimerViewController:didFailedWithError:)])
+            if([self.delegate respondsToSelector:@selector(VideoTrimmerViewController:didFailedWithError:)])
             {
-                [self.delegate videoTrimerViewController:self didFailedWithError:error];
+                [self.delegate VideoTrimmerViewController:self didFailedWithError:error];
             }
         } else {
             //do progress bar
@@ -156,10 +156,10 @@
 			});
         } else {
             NSString *errorText = [NSString stringWithFormat:@"Failed to fetch video with local identifier %@ with no error message.", localIdentifier];
-            if([self.delegate respondsToSelector:@selector(videoTrimerViewController:didFailedWithError:)])
+            if([self.delegate respondsToSelector:@selector(VideoTrimmerViewController:didFailedWithError:)])
             {
                 NSError *error = [NSError errorWithDomain:NSURLErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey : errorText}];
-                [self.delegate videoTrimerViewController:self didFailedWithError:error];
+                [self.delegate VideoTrimmerViewController:self didFailedWithError:error];
             }
         }
     }];
@@ -183,9 +183,9 @@
         self.isPlaying = NO;
     }
     [self dismissViewControllerAnimated:YES completion:nil];
-    if([self.delegate respondsToSelector:@selector(didFinishVideoTrimerViewController:)])
+    if([self.delegate respondsToSelector:@selector(didFinishVideoTrimmerViewController:)])
     {
-        [self.delegate didFinishVideoTrimerViewController:self];
+        [self.delegate didFinishVideoTrimmerViewController:self];
     }
 }
 
@@ -196,9 +196,9 @@
         self.isPlaying = NO;
     }
     [self dismissViewControllerAnimated:YES completion:nil];
-    if([self.delegate respondsToSelector:@selector(didFinishVideoTrimerViewController:withStartTime:endTime:)])
+    if([self.delegate respondsToSelector:@selector(didFinishVideoTrimmerViewController:withStartTime:endTime:)])
     {
-        [self.delegate didFinishVideoTrimerViewController:self withStartTime:self.startTime endTime:self.stopTime];
+        [self.delegate didFinishVideoTrimmerViewController:self withStartTime:self.startTime endTime:self.stopTime];
     }
 }
 
