@@ -50,7 +50,7 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated{
-
+    
 }
 
 
@@ -74,7 +74,7 @@
     if( localIdentifier == nil) {
         return;
     }
-
+    
     PHFetchResult *results;
     results = [PHAsset fetchAssetsWithLocalIdentifiers:@[localIdentifier] options:nil];
     if (results.count == 0) {
@@ -82,10 +82,10 @@
         if([self.delegate respondsToSelector:@selector(VideoTrimmerViewController:didFailedWithError:)])
         {
             NSError *error = [NSError errorWithDomain:NSURLErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey : errorText}];
-            [self.delegate VideoTrimmerViewController:self didFailedWithError:error];
+            [self.delegate videoTrimmerViewController:self didFailedWithError:error];
         }
     }
-
+    
     PHAsset *phAsset = [results firstObject];
     PHVideoRequestOptions *options = [self getVideoRequestOptions];
     [self.progressBar setHidden:YES];
@@ -93,73 +93,73 @@
         if(error) {
             if([self.delegate respondsToSelector:@selector(VideoTrimmerViewController:didFailedWithError:)])
             {
-                [self.delegate VideoTrimmerViewController:self didFailedWithError:error];
+                [self.delegate videoTrimmerViewController:self didFailedWithError:error];
             }
         } else {
             //do progress bar
-			dispatch_async(dispatch_get_main_queue(), ^{
+            dispatch_async(dispatch_get_main_queue(), ^{
                 if(progress < 1.0) {
                     [self.progressBar setHidden:NO];
                     [self.progressBar setProgress:progress];
                 } else {
                     [self.progressBar setHidden:YES];
                 }
-			});
+            });
         }
     };
     self.assetRequestID = [[PHImageManager defaultManager] requestAVAssetForVideo:phAsset options:options resultHandler:^(AVAsset * _Nullable avAsset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
-
+        
         if (avAsset != nil) {
             if([avAsset isKindOfClass:[AVURLAsset class]]){
                 self.asset = [AVURLAsset assetWithURL:((AVURLAsset*)avAsset).URL];
             } else if (avAsset){
                 self.asset = avAsset;
             }
-
-			dispatch_async(dispatch_get_main_queue(), ^{
-				[self.progressBar setHidden:YES];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.progressBar setHidden:YES];
                 AVPlayerItem *item = [AVPlayerItem playerItemWithAsset:self.asset];
-				self.player = [AVPlayer playerWithPlayerItem:item];
+                self.player = [AVPlayer playerWithPlayerItem:item];
                 [self.player addObserver:self forKeyPath:@"status" options:0 context:nil];
-				self.playerLayer = [AVPlayerLayer playerLayerWithPlayer:self.player];
-				self.playerLayer.contentsGravity = AVLayerVideoGravityResizeAspect;
-				self.player.actionAtItemEnd = AVPlayerActionAtItemEndNone;
+                self.playerLayer = [AVPlayerLayer playerLayerWithPlayer:self.player];
+                self.playerLayer.contentsGravity = AVLayerVideoGravityResizeAspect;
+                self.player.actionAtItemEnd = AVPlayerActionAtItemEndNone;
                 NSLog(@"videoLayer %@", NSStringFromCGRect(self.videoLayer.bounds));
-				[self.videoLayer.layer addSublayer:self.playerLayer];
+                [self.videoLayer.layer addSublayer:self.playerLayer];
                 self.playerLayer.frame = CGRectMake(0, 0, self.videoLayer.frame.size.width, self.videoLayer.frame.size.height);
                 NSLog(@"playerLayer %@", NSStringFromCGRect(self.playerLayer.bounds));
-				UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapOnVideoLayer:)];
-				[self.videoLayer addGestureRecognizer:tap];
-
+                UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapOnVideoLayer:)];
+                [self.videoLayer addGestureRecognizer:tap];
+                
                 Float64 duration = CMTimeGetSeconds(self.asset.duration);
-
+                
                 self.stopTime = duration < self.maxLength ? duration : self.maxLength ;
                 self.startTime = 0;
-
+                
                 self.videoPlaybackPosition = 0;
-
-//                [self tapOnVideoLayer:tap];
-
-				// set properties for trimmer view
-				[self.trimmerView setThemeColor: DEFAULT_THEME];
-				[self.trimmerView setAsset:self.asset];
-				[self.trimmerView setShowsRulerView:NO];
-//                [self.trimmerView setRulerLabelInterval:10];
-				[self.trimmerView setTrackerColor:[UIColor whiteColor]];
-				[self.trimmerView setDelegate:self];
+                
+                //                [self tapOnVideoLayer:tap];
+                
+                // set properties for trimmer view
+                [self.trimmerView setThemeColor: DEFAULT_THEME];
+                [self.trimmerView setAsset:self.asset];
+                [self.trimmerView setShowsRulerView:NO];
+                //                [self.trimmerView setRulerLabelInterval:10];
+                [self.trimmerView setTrackerColor:[UIColor whiteColor]];
+                [self.trimmerView setDelegate:self];
                 [self.trimmerView setMaxLength: self.maxLength ];
                 [self.trimmerView setMinLength: self.minLength ];
                 [self.trimmerView setThumbWidth:12];
-
-				// important: reset subviews
-				[self.trimmerView resetSubviews];
-			});
+                
+                // important: reset subviews
+                [self.trimmerView resetSubviews];
+            });
         } else {
             NSString *errorText = [NSString stringWithFormat:@"Failed to fetch video with local identifier %@ with no error message.", localIdentifier];
             if([self.delegate respondsToSelector:@selector(VideoTrimmerViewController:didFailedWithError:)])
             {
                 NSError *error = [NSError errorWithDomain:NSURLErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey : errorText}];
-                [self.delegate VideoTrimmerViewController:self didFailedWithError:error];
+                [self.delegate videoTrimmerViewController:self didFailedWithError:error];
             }
         }
     }];
@@ -211,9 +211,9 @@
     [self.player pause];
     self.isPlaying = NO;
     [self stopPlaybackTimeChecker];
-
+    
     [self.trimmerView hideTracker:true];
-
+    
     if (startTime != self.startTime) {
         //then it moved the left position, we should rearrange the bar
         [self seekVideoToPos:startTime];
@@ -221,18 +221,18 @@
     else{ // right has changed
         [self seekVideoToPos:endTime];
     }
-
-    if( fabs(self.startTime - startTime) < 0.1 && fabs(self.stopTime - endTime) < 0.1 ){
-//        [trimmerView setThemeColor:DEFAULT_THEME];
-//        [self.doneButton setEnabled:NO];
+    
+    if( fabs(self.startTime - startTime) < 0.01 && fabs(self.stopTime - endTime) < 0.01 ){
+        //        [trimmerView setThemeColor:DEFAULT_THEME];
+        //        [self.doneButton setEnabled:NO];
     } else {
         [trimmerView setThemeColor:EDITED_THEME];
         [self.doneButton setEnabled:YES];
-
+        
     }
     self.startTime = startTime;
     self.stopTime = endTime;
-
+    
     [self.durationLabel setText: [self timeFormatted:self.stopTime-self.startTime]];
     [self.rangeLabel setText:[NSString stringWithFormat:@"%@ to %@", [self timeFormatted:self.startTime], [self timeFormatted:self.stopTime]]];
 }
@@ -242,18 +242,18 @@
 }
 
 -(NSString*) timeFormatted:(CGFloat) sec{
-
+    
     int totalSeconds = roundf(sec);
     int seconds = totalSeconds % 60;
     int minutes = (totalSeconds / 60) % 60;
-
+    
     return [NSString stringWithFormat:@"%02d:%02d", minutes, seconds];
 }
 
 -(void) setVideoRangeLabelWithSring:(NSString*) msg{
-
-//    [self.timeRangeLabel setText:[NSString stringWithFormat:HINTS_MESSAGE,@(DEFAULT_VIDEO_LENGTH)]];
-
+    
+    //    [self.timeRangeLabel setText:[NSString stringWithFormat:HINTS_MESSAGE,@(DEFAULT_VIDEO_LENGTH)]];
+    
 }
 
 
@@ -283,7 +283,7 @@
 - (void)startPlaybackTimeChecker
 {
     [self stopPlaybackTimeChecker];
-
+    
     self.playbackTimeCheckerTimer = [NSTimer scheduledTimerWithTimeInterval:0.1f target:self selector:@selector(onPlaybackTimeCheckerTimer) userInfo:nil repeats:YES];
 }
 
@@ -306,9 +306,9 @@
         seconds = 0; // this happens! dont know why.
     }
     self.videoPlaybackPosition = seconds;
-
+    
     [self.trimmerView seekToTime:seconds];
-
+    
     if (self.videoPlaybackPosition >= self.stopTime) {
         [self.player pause];
         self.videoPlaybackPosition = self.startTime;
