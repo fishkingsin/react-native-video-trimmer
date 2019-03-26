@@ -2,7 +2,7 @@
 Pod::Spec.new do |s|
   s.name         = "react-native-video-trimmer"
   s.homepage	 = "http://facebook.github.io/react-native/"
-  s.version      = "1.0.0"
+  s.version      = "1.0.0-dev10"
   s.summary      = "react-native-video-trimmer"
   s.license      = "MIT"
   s.ios.deployment_target  = '9.0'
