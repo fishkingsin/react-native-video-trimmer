@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		B3E7B58A1CC2AC0600A0062D /* RNVideoTrimmer.m in Sources */ = {isa = PBXBuildFile; fileRef = B3E7B5891CC2AC0600A0062D /* RNVideoTrimmer.m */; };
-		E36C3A052147510800097C81 /* VideoTrimerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E36C3A032147510800097C81 /* VideoTrimerViewController.m */; };
+		E36C3A052147510800097C81 /* VideoTrimmerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E36C3A032147510800097C81 /* VideoTrimmerViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -27,8 +27,8 @@
 		134814201AA4EA6300B7C361 /* libRNVideoTrimmer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNVideoTrimmer.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		B3E7B5881CC2AC0600A0062D /* RNVideoTrimmer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNVideoTrimmer.h; sourceTree = "<group>"; };
 		B3E7B5891CC2AC0600A0062D /* RNVideoTrimmer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNVideoTrimmer.m; sourceTree = "<group>"; };
-		E36C3A022147510800097C81 /* VideoTrimerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoTrimerViewController.h; sourceTree = "<group>"; };
-		E36C3A032147510800097C81 /* VideoTrimerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VideoTrimerViewController.m; sourceTree = "<group>"; };
+		E36C3A022147510800097C81 /* VideoTrimmerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoTrimmerViewController.h; sourceTree = "<group>"; };
+		E36C3A032147510800097C81 /* VideoTrimmerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VideoTrimmerViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,8 +53,8 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
-				E36C3A022147510800097C81 /* VideoTrimerViewController.h */,
-				E36C3A032147510800097C81 /* VideoTrimerViewController.m */,
+				E36C3A022147510800097C81 /* VideoTrimmerViewController.h */,
+				E36C3A032147510800097C81 /* VideoTrimmerViewController.m */,
 				B3E7B5881CC2AC0600A0062D /* RNVideoTrimmer.h */,
 				B3E7B5891CC2AC0600A0062D /* RNVideoTrimmer.m */,
 				134814211AA4EA7D00B7C361 /* Products */,
@@ -118,7 +118,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B3E7B58A1CC2AC0600A0062D /* RNVideoTrimmer.m in Sources */,
-				E36C3A052147510800097C81 /* VideoTrimerViewController.m in Sources */,
+				E36C3A052147510800097C81 /* VideoTrimmerViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
