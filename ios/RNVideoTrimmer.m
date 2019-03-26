@@ -6,7 +6,7 @@
 #import <React/RCTUtils.h>
 #import "VideoTrimmerViewController.h"
 @import Photos;
-@interface RNVideoTrimmer () <VideoTrimerViewDelegate>
+@interface RNVideoTrimmer () <VideoTrimmerViewDelegate>
 
 @property (nonatomic, strong) RCTResponseSenderBlock callback;
 @property (nonatomic, strong) NSDictionary *defaultOptions;
