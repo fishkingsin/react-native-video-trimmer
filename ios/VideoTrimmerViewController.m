@@ -53,6 +53,19 @@
     
 }
 
+-(void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    if (_assetRequestID != PHInvalidImageRequestID) {
+        
+        [[PHImageManager defaultManager] cancelImageRequest:_assetRequestID];
+        _assetRequestID = PHInvalidImageRequestID;
+        
+    }
+    if(self.player) {
+        [self.player removeObserver:self forKeyPath:@"status"];
+    }
+}
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -79,7 +92,7 @@
     results = [PHAsset fetchAssetsWithLocalIdentifiers:@[localIdentifier] options:nil];
     if (results.count == 0) {
         NSString *errorText = [NSString stringWithFormat:@"Failed to fetch PHAsset with local identifier %@ with no error message.", localIdentifier];
-        if([self.delegate respondsToSelector:@selector(VideoTrimmerViewController:didFailedWithError:)])
+        if([self.delegate respondsToSelector:@selector(videoTrimmerViewController:didFailedWithError:)])
         {
             NSError *error = [NSError errorWithDomain:NSURLErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey : errorText}];
             [self.delegate videoTrimmerViewController:self didFailedWithError:error];
@@ -91,7 +104,7 @@
     [self.progressBar setHidden:YES];
     options.progressHandler = ^(double progress, NSError * _Nullable error, BOOL * _Nonnull stop, NSDictionary * _Nullable info) {
         if(error) {
-            if([self.delegate respondsToSelector:@selector(VideoTrimmerViewController:didFailedWithError:)])
+            if([self.delegate respondsToSelector:@selector(videoTrimmerViewController:didFailedWithError:)])
             {
                 [self.delegate videoTrimmerViewController:self didFailedWithError:error];
             }
@@ -107,59 +120,62 @@
             });
         }
     };
+    __weak __typeof(self) weakSelf = self;
     self.assetRequestID = [[PHImageManager defaultManager] requestAVAssetForVideo:phAsset options:options resultHandler:^(AVAsset * _Nullable avAsset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
-        
+        if(weakSelf.assetRequestID == PHInvalidImageRequestID){
+            return;
+        }
         if (avAsset != nil) {
             if([avAsset isKindOfClass:[AVURLAsset class]]){
-                self.asset = [AVURLAsset assetWithURL:((AVURLAsset*)avAsset).URL];
+                weakSelf.asset = [AVURLAsset assetWithURL:((AVURLAsset*)avAsset).URL];
             } else if (avAsset){
-                self.asset = avAsset;
+                weakSelf.asset = avAsset;
             }
             
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self.progressBar setHidden:YES];
-                AVPlayerItem *item = [AVPlayerItem playerItemWithAsset:self.asset];
-                self.player = [AVPlayer playerWithPlayerItem:item];
-                [self.player addObserver:self forKeyPath:@"status" options:0 context:nil];
-                self.playerLayer = [AVPlayerLayer playerLayerWithPlayer:self.player];
-                self.playerLayer.contentsGravity = AVLayerVideoGravityResizeAspect;
-                self.player.actionAtItemEnd = AVPlayerActionAtItemEndNone;
-                NSLog(@"videoLayer %@", NSStringFromCGRect(self.videoLayer.bounds));
-                [self.videoLayer.layer addSublayer:self.playerLayer];
-                self.playerLayer.frame = CGRectMake(0, 0, self.videoLayer.frame.size.width, self.videoLayer.frame.size.height);
-                NSLog(@"playerLayer %@", NSStringFromCGRect(self.playerLayer.bounds));
-                UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapOnVideoLayer:)];
-                [self.videoLayer addGestureRecognizer:tap];
+                [weakSelf.progressBar setHidden:YES];
+                AVPlayerItem *item = [AVPlayerItem playerItemWithAsset:weakSelf.asset];
+                weakSelf.player = [AVPlayer playerWithPlayerItem:item];
+                [weakSelf.player addObserver:weakSelf forKeyPath:@"status" options:0 context:nil];
+                weakSelf.playerLayer = [AVPlayerLayer playerLayerWithPlayer:weakSelf.player];
+                weakSelf.playerLayer.contentsGravity = AVLayerVideoGravityResizeAspect;
+                weakSelf.player.actionAtItemEnd = AVPlayerActionAtItemEndNone;
+                NSLog(@"videoLayer %@", NSStringFromCGRect(weakSelf.videoLayer.bounds));
+                [weakSelf.videoLayer.layer addSublayer:weakSelf.playerLayer];
+                weakSelf.playerLayer.frame = CGRectMake(0, 0, weakSelf.videoLayer.frame.size.width, weakSelf.videoLayer.frame.size.height);
+                NSLog(@"playerLayer %@", NSStringFromCGRect(weakSelf.playerLayer.bounds));
+                UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:weakSelf action:@selector(tapOnVideoLayer:)];
+                [weakSelf.videoLayer addGestureRecognizer:tap];
                 
-                Float64 duration = CMTimeGetSeconds(self.asset.duration);
+                Float64 duration = CMTimeGetSeconds(weakSelf.asset.duration);
                 
-                self.stopTime = duration < self.maxLength ? duration : self.maxLength ;
-                self.startTime = 0;
+                weakSelf.stopTime = duration < weakSelf.maxLength ? duration : weakSelf.maxLength ;
+                weakSelf.startTime = 0;
                 
-                self.videoPlaybackPosition = 0;
+                weakSelf.videoPlaybackPosition = 0;
                 
                 //                [self tapOnVideoLayer:tap];
                 
                 // set properties for trimmer view
-                [self.trimmerView setThemeColor: DEFAULT_THEME];
-                [self.trimmerView setAsset:self.asset];
-                [self.trimmerView setShowsRulerView:NO];
-                //                [self.trimmerView setRulerLabelInterval:10];
-                [self.trimmerView setTrackerColor:[UIColor whiteColor]];
-                [self.trimmerView setDelegate:self];
-                [self.trimmerView setMaxLength: self.maxLength ];
-                [self.trimmerView setMinLength: self.minLength ];
-                [self.trimmerView setThumbWidth:12];
+                [weakSelf.trimmerView setThemeColor: DEFAULT_THEME];
+                [weakSelf.trimmerView setAsset:weakSelf.asset];
+                [weakSelf.trimmerView setShowsRulerView:NO];
+                //                [weakSelf.trimmerView setRulerLabelInterval:10];
+                [weakSelf.trimmerView setTrackerColor:[UIColor whiteColor]];
+                [weakSelf.trimmerView setDelegate:weakSelf];
+                [weakSelf.trimmerView setMaxLength: weakSelf.maxLength ];
+                [weakSelf.trimmerView setMinLength: weakSelf.minLength ];
+                [weakSelf.trimmerView setThumbWidth:12];
                 
                 // important: reset subviews
-                [self.trimmerView resetSubviews];
+                [weakSelf.trimmerView resetSubviews];
             });
         } else {
             NSString *errorText = [NSString stringWithFormat:@"Failed to fetch video with local identifier %@ with no error message.", localIdentifier];
-            if([self.delegate respondsToSelector:@selector(VideoTrimmerViewController:didFailedWithError:)])
+            if([weakSelf.delegate respondsToSelector:@selector(videoTrimmerViewController:didFailedWithError:)])
             {
                 NSError *error = [NSError errorWithDomain:NSURLErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey : errorText}];
-                [self.delegate videoTrimmerViewController:self didFailedWithError:error];
+                [weakSelf.delegate videoTrimmerViewController:self didFailedWithError:error];
             }
         }
     }];
