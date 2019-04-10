@@ -40,6 +40,7 @@
 @property (strong, nonatomic) AVAsset *asset;
 @property (nonatomic, assign) PHImageRequestID assetRequestID;
 @property (assign, nonatomic) BOOL restartOnPlay;
+@property (assign) dispatch_source_t source;
 @end
 
 @implementation VideoTrimmerViewController
@@ -55,6 +56,13 @@
 
 -(void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
+    if (_assetRequestID != PHInvalidImageRequestID) {
+        
+        [[PHImageManager defaultManager] cancelImageRequest:_assetRequestID];
+        _assetRequestID = PHInvalidImageRequestID;
+        
+    }
+    dispatch_cancel(_source);
     if(self.player) {
         [self.player removeObserver:self forKeyPath:@"status"];
     }
@@ -122,8 +130,9 @@
             } else if (avAsset){
                 self.asset = avAsset;
             }
+            _source = dispatch_source_create(DISPATCH_SOURCE_TYPE_DATA_ADD, 0, 0, dispatch_get_main_queue());
             
-            dispatch_async(dispatch_get_main_queue(), ^{
+            dispatch_source_set_event_handler(_source, ^{
                 [self.progressBar setHidden:YES];
                 AVPlayerItem *item = [AVPlayerItem playerItemWithAsset:self.asset];
                 self.player = [AVPlayer playerWithPlayerItem:item];
