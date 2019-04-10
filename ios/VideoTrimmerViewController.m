@@ -40,7 +40,6 @@
 @property (strong, nonatomic) AVAsset *asset;
 @property (nonatomic, assign) PHImageRequestID assetRequestID;
 @property (assign, nonatomic) BOOL restartOnPlay;
-@property (assign) dispatch_source_t source;
 @end
 
 @implementation VideoTrimmerViewController
@@ -62,7 +61,6 @@
         _assetRequestID = PHInvalidImageRequestID;
         
     }
-    dispatch_cancel(_source);
     if(self.player) {
         [self.player removeObserver:self forKeyPath:@"status"];
     }
@@ -94,7 +92,7 @@
     results = [PHAsset fetchAssetsWithLocalIdentifiers:@[localIdentifier] options:nil];
     if (results.count == 0) {
         NSString *errorText = [NSString stringWithFormat:@"Failed to fetch PHAsset with local identifier %@ with no error message.", localIdentifier];
-        if([self.delegate respondsToSelector:@selector(VideoTrimmerViewController:didFailedWithError:)])
+        if([self.delegate respondsToSelector:@selector(videoTrimmerViewController:didFailedWithError:)])
         {
             NSError *error = [NSError errorWithDomain:NSURLErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey : errorText}];
             [self.delegate videoTrimmerViewController:self didFailedWithError:error];
@@ -106,7 +104,7 @@
     [self.progressBar setHidden:YES];
     options.progressHandler = ^(double progress, NSError * _Nullable error, BOOL * _Nonnull stop, NSDictionary * _Nullable info) {
         if(error) {
-            if([self.delegate respondsToSelector:@selector(VideoTrimmerViewController:didFailedWithError:)])
+            if([self.delegate respondsToSelector:@selector(videoTrimmerViewController:didFailedWithError:)])
             {
                 [self.delegate videoTrimmerViewController:self didFailedWithError:error];
             }
@@ -123,16 +121,17 @@
         }
     };
     self.assetRequestID = [[PHImageManager defaultManager] requestAVAssetForVideo:phAsset options:options resultHandler:^(AVAsset * _Nullable avAsset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
-        
+        if(_assetRequestID == PHInvalidImageRequestID){
+            return;
+        }
         if (avAsset != nil) {
             if([avAsset isKindOfClass:[AVURLAsset class]]){
                 self.asset = [AVURLAsset assetWithURL:((AVURLAsset*)avAsset).URL];
             } else if (avAsset){
                 self.asset = avAsset;
             }
-            _source = dispatch_source_create(DISPATCH_SOURCE_TYPE_DATA_ADD, 0, 0, dispatch_get_main_queue());
             
-            dispatch_source_set_event_handler(_source, ^{
+            dispatch_async(dispatch_get_main_queue(), ^{
                 [self.progressBar setHidden:YES];
                 AVPlayerItem *item = [AVPlayerItem playerItemWithAsset:self.asset];
                 self.player = [AVPlayer playerWithPlayerItem:item];
@@ -172,7 +171,7 @@
             });
         } else {
             NSString *errorText = [NSString stringWithFormat:@"Failed to fetch video with local identifier %@ with no error message.", localIdentifier];
-            if([self.delegate respondsToSelector:@selector(VideoTrimmerViewController:didFailedWithError:)])
+            if([self.delegate respondsToSelector:@selector(videoTrimmerViewController:didFailedWithError:)])
             {
                 NSError *error = [NSError errorWithDomain:NSURLErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey : errorText}];
                 [self.delegate videoTrimmerViewController:self didFailedWithError:error];
