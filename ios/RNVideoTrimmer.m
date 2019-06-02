@@ -26,8 +26,9 @@ RCT_EXPORT_METHOD(showVideoTrimmer:(NSDictionary *)options callback:(RCTResponse
     self.options = [NSMutableDictionary dictionaryWithDictionary:options];
 
     NSString *assetID = @"";
+    NSString *uri = self.options[@"uri"];
 
-    assetID = [self.options[@"uri"] substringFromIndex:@"ph://".length];
+    assetID = [uri substringFromIndex:@"ph://".length];
     float maxLength = 15;
     float minLength = 0;
     if(self.options[@"maxLength"]){
@@ -38,9 +39,19 @@ RCT_EXPORT_METHOD(showVideoTrimmer:(NSDictionary *)options callback:(RCTResponse
     }
     PHFetchResult *results;
     results = [PHAsset fetchAssetsWithLocalIdentifiers:@[assetID] options:nil];
-    if (results.count == 0) {
+    PHAsset *result;
+    if([uri hasPrefix:@"ph://"]){
+        assetID = [uri substringFromIndex:@"ph://".length];
+        result = [PHAsset fetchAssetsWithLocalIdentifiers:@[assetID] options:nil].lastObject;
+    } else if ([uri hasPrefix:@"assets-library://"]){
+        result = [PHAsset fetchAssetsWithALAssetURLs:@[[NSURL URLWithString:uri]] options:nil].lastObject;
+        assetID = result.localIdentifier;
+    }
+    if (result == nil) {
         NSString *errorText = [NSString stringWithFormat:@"Failed to fetch PHAsset with local identifier %@ with no error message.", assetID];
         self.callback(@[@{@"error": errorText}]);
+        self.callback = nil;
+        return;
     }
 
 
@@ -82,17 +93,26 @@ RCT_EXPORT_METHOD(showVideoTrimmer:(NSDictionary *)options callback:(RCTResponse
 }
 - (void)didFinishVideoTrimmerViewController:(nonnull VideoTrimmerViewController *)videoTrimmerController withStartTime:(Float64)startTime endTime:(Float64)endTime{
     NSLog(@"didFinishVideoTrimmerViewController withStartTime endTime %f %f", startTime, endTime);
-    self.callback(@[@{
-                        @"uri":self.options[@"uri"],
-                        @"startTime":@(startTime),
-                        @"endTime":@(endTime)
-                        }]);
+    if(self.callback != nil) {
+        self.callback(@[@{
+                            @"uri":self.options[@"uri"],
+                            @"startTime":@(startTime),
+                            @"endTime":@(endTime)
+                            }]);
+        self.callback = nil;
+    }
 }
 - (void)didFinishVideoTrimmerViewController:(nonnull VideoTrimmerViewController *)videoTrimmerController{
     NSLog(@"didFinishVideoTrimmerViewController");
-    self.callback(@[@{@"error": @"user cancel"}]);
+    if(self.callback != nil) {
+        self.callback(@[@{@"error": @"user cancel"}]);
+        self.callback = nil;
+    }
 }
 - (void)VideoTrimmerViewController:(nonnull VideoTrimmerViewController *)videoTrimmerController didFailedWithError:(NSError *)error{
-    self.callback(@[@{@"error": error.localizedDescription}]);
+    if(self.callback != nil) {
+        self.callback(@[@{@"error": error.localizedDescription}]);
+        self.callback = nil;
+    }
 }
 @end
