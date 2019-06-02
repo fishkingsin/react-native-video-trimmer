@@ -45,3 +45,4 @@ buck-out/
 *.keystore
       
 android/bin
+example/ios/Pods
