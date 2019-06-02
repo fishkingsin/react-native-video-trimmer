@@ -22,6 +22,7 @@ Pod::Spec.new do |s|
 
   s.dependency "React"
   s.dependency "ICGVideoTrimmer"
+  s.dependency "SDAVAssetExportSession"
   #s.dependency "others"
 
 end
