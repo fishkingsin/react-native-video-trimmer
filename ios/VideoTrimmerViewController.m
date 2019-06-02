@@ -212,9 +212,9 @@
         self.isPlaying = NO;
     }
     [self dismissViewControllerAnimated:YES completion:nil];
-    if([self.delegate respondsToSelector:@selector(didFinishVideoTrimmerViewController:withStartTime:endTime:)])
+    if([self.delegate respondsToSelector:@selector(didFinishVideoTrimmerViewController:withStartTime:endTime:avasset:)])
     {
-        [self.delegate didFinishVideoTrimmerViewController:self withStartTime:self.startTime endTime:self.stopTime];
+        [self.delegate didFinishVideoTrimmerViewController:self withStartTime:self.startTime endTime:self.stopTime avasset:self.asset];
     }
 }
 

@@ -20,7 +20,7 @@
 
 @optional
 - (void)videoTrimmerViewController:(nonnull VideoTrimmerViewController *)videoTrimmerController didChangeStartTime:(Float64)startTime endTime:(Float64)endTime;
-- (void)didFinishVideoTrimmerViewController:(nonnull VideoTrimmerViewController *)videoTrimmerController withStartTime:(Float64)startTime endTime:(Float64)endTime;
+- (void)didFinishVideoTrimmerViewController:(nonnull VideoTrimmerViewController *)videoTrimmerController withStartTime:(Float64)startTime endTime:(Float64)endTime avasset:(AVAsset*) avasset;
 - (void)didFinishVideoTrimmerViewController:(nonnull VideoTrimmerViewController *)videoTrimmerController;
 - (void)videoTrimmerViewController:(nonnull VideoTrimmerViewController *)videoTrimmerController didFailedWithError:(NSError *)error;
 @end

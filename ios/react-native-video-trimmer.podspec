@@ -6,10 +6,10 @@ Pod::Spec.new do |s|
   s.summary      = "react-native-video-trimmer"
   s.license      = "MIT"
   s.ios.deployment_target  = '9.0'
-  s.license      = { :type => "MIT", :file => "FILE_LICENSE" }
-  s.author             = { "author" => "fishkingsin@gmail.com" }
+  # s.license      = { :type => "MIT", :file => "FILE_LICENSE" }
+  s.author             = { "author" => "author@domain.cn" }
   s.platform     = :ios, "9.0"
-  s.source       = { :git => "https://github.com/fishkingsin/react-native-video-trimmer/releases", :tag => "master" }
+  s.source       = { :git => "https://git.nixplay.ninja/mobile/react-native-video-trimmer.git", :tag => "master" }
   s.source_files  = "*.{h,m}"
   s.resources = "RNVideoTrimmer/*.xib"
   s.resource_bundles = {
@@ -22,7 +22,6 @@ Pod::Spec.new do |s|
 
   s.dependency "React"
   s.dependency "ICGVideoTrimmer"
-  s.dependency "SDAVAssetExportSession"
   #s.dependency "others"
 
 end
