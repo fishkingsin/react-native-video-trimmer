@@ -3,6 +3,7 @@ package com.example;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.reactnativecommunity.slider.ReactSliderPackage;
 import com.creedon.reactlibrary.videotrimmer.RNVideoTrimmerPackage;
 import com.imagepicker.ImagePickerPackage;
 import com.brentvatne.react.ReactVideoPackage;
@@ -26,8 +27,9 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new ReactSliderPackage(),
             new RNVideoTrimmerPackage(),
-            new ImagePickerPackage(R.style.my_dialog_style),
+            new ImagePickerPackage(),
             new ReactVideoPackage()
       );
     }

@@ -34,4 +34,6 @@ target 'example' do
   pod 'react-native-video', :path => '../node_modules/react-native-video'
   pod 'react-native-image-picker', :path => '../node_modules/react-native-image-picker'
   pod 'react-native-video-trimmer', :path => '../node_modules/react-native-video-trimmer/ios'
+  pod 'react-native-slider', :path => '../node_modules/@react-native-community/slider'
+
 end
