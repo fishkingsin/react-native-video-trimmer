@@ -91,7 +91,6 @@ export default class App extends Component<Props> {
 
       },
       paused: true,
-      playButtonTitle: 'Play',
     }
   }
   renderProgressBar = (progress) => (
@@ -120,15 +119,6 @@ export default class App extends Component<Props> {
               currentProgress,
             })
             this.player.seek(res.startTime);
-            // this.props.trimmedVideoLength(
-            //   currentItem,
-            //   res.startTime,
-            //   res.endTime,
-            // );
-            // this.props.navigation.setParams({
-            //   title: this.getHeaderTitle(),
-            // });
-            // this.setState({ paused: false });
           }
         });
       }
@@ -159,7 +149,7 @@ export default class App extends Component<Props> {
   palyVideo = () => {
     const paused = !this.state.paused;
     if (this.player !== undefined) {
-      this.setState({ paused , playButtonTitle: paused ? 'Play' : 'Pause', currentProgress: this.state.range.start / this.state.duration }, () => {
+      this.setState({ paused , currentProgress: this.state.range.start / this.state.duration }, () => {
         this.player.seek(this.state.currentProgress * this.state.duration);
       });
 
@@ -197,7 +187,7 @@ export default class App extends Component<Props> {
   }
   
   onEnd = () => {
-    this.setState({ currentProgress: this.state.range.start, paused: true, playButtonTitle: 'Play' });
+    this.setState({ currentProgress: this.state.range.start, paused: true });
     this.player.seek(0);
   }
 
@@ -239,7 +229,7 @@ export default class App extends Component<Props> {
           }
           
           <Button style={styles.button} title="pick" onPress={this.showImagePciker} />
-          <Button style={styles.button}  title={ this.state.playButtonTitle } onPress={this.palyVideo}/>
+          <Button style={styles.button}  title={ this.state.pause ? 'Play' : 'Pause' } onPress={this.palyVideo}/>
           <Button style={styles.button} title="trim" onPress={this.showVideoTrimmer} />
         </SafeAreaView>
       </View>
