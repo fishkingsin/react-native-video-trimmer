@@ -45,7 +45,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.facebook.react:react-native:+'
+    implementation 'com.facebook.react:react-native:+'
     implementation 'com.android.support:appcompat-v7:27.1.1'
 	implementation 'com.android.support:recyclerview-v7:27.1.1'
 	implementation 'com.github.iknow4:android-utils-sdk:1.1.2'
