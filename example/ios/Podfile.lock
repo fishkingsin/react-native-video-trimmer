@@ -183,7 +183,7 @@ PODS:
     - React-cxxreact (= 0.61.5)
     - React-jsi (= 0.61.5)
   - React-jsinspector (0.61.5)
-  - react-native-image-picker (0.28.1):
+  - react-native-image-picker (1.1.0):
     - React
   - react-native-slider (2.0.5):
     - React
@@ -362,7 +362,7 @@ SPEC CHECKSUMS:
   React-jsi: cb2cd74d7ccf4cffb071a46833613edc79cdf8f7
   React-jsiexecutor: d5525f9ed5f782fdbacb64b9b01a43a9323d2386
   React-jsinspector: fa0ecc501688c3c4c34f28834a76302233e29dc0
-  react-native-image-picker: fd93361c666f397bdf72f9c6c23f13d2685b9173
+  react-native-image-picker: 3637d63fef7e32a230141ab4660d3ceb773c824f
   react-native-slider: 77cb20fc8d9522b891a3fef1821a715579ea1da1
   react-native-video: 25d5aebb3c9d7cdefe7a909306c7ab40be4a892c
   react-native-video-trimmer: c520a6877364289699578c73b70ecfd0f66d24dd

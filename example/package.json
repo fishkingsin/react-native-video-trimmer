@@ -16,7 +16,7 @@
     "query-string": "^6.9.0",
     "react": "16.9.0",
     "react-native": "0.61.5",
-    "react-native-image-picker": "^0.28.1",
+    "react-native-image-picker": "^1.1.0",
     "react-native-slider": "^0.11.0",
     "react-native-video": "^4.4.1",
     "react-native-video-trimmer": "git+https://github.com/fishkingsin/react-native-video-trimmer.git#1.0.1"
