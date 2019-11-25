@@ -2,8 +2,7 @@
   package="com.example">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
     <application
       android:name=".MainApplication"
       android:label="@string/app_name"
@@ -22,8 +21,6 @@
         </intent-filter>
       </activity>
       <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
-        <!--add the following activity-->
-        <activity android:name="com.creedon.reactlibrary.videotrimmer.features.trim.VideoTrimmerActivity" />
     </application>
 
 </manifest>
