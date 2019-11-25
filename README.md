@@ -17,7 +17,10 @@
 1. In XCode, in the project navigator, right click `Libraries` ➜ `Add Files to [your project's name]`
 2. Go to `node_modules` ➜ `react-native-video-trimmer` and add `RNVideoTrimmer.xcodeproj`
 3. In XCode, in the project navigator, select your project. Add `libRNVideoTrimmer.a` to your project's `Build Phases` ➜ `Link Binary With Libraries`
-4. Run your project (`Cmd+R`)<
+5. cd `ios`
+6. create Podfile sample Podfile `https://facebook.github.io/react-native/docs/integration-with-existing-apps`
+7. add `pod 'ICGVideoTrimmer', :git => 'https://github.com/nixplay/ICGVideoTrimmer.git'` to Podfile
+8. run `pod install`
 
 #### Android
 
