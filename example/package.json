@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "@react-native-community/slider": "^1.1.3",
-    "lodash": "^4.17.13",
+    "lodash": "^4.17.19",
     "prop-types": "^15.7.2",
     "query-string": "^6.5.0",
     "react": "16.8.3",
